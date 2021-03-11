@@ -1,0 +1,34 @@
+{% for pathItem in pathinfo %} 
+{% if pathItem.path == active %}
+<a
+  class="nav-item d-lg-flex align-items-center nav-link active"
+  href="{{pathItem.path}}"
+  >{{pathItem.text}}
+</a>
+{% else %}
+<a
+  class="nav-item d-lg-flex align-items-center nav-link"
+  href="{{pathItem.path}}"
+  >{{pathItem.text}}
+</a>
+{% endif %} 
+{% endfor %}
+{% if request.session.loggedInUser == None %}
+<button
+  type="button"
+  class="nav-link btn btn-danger btn-md nav-item d-lg-flex align-items-center"
+  onclick="location.href='login'"
+>
+  Prijava
+</button>
+{% else %}
+<li class="nav-item dropdown">
+  <a class="nav-link dropdown-toggle" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+    {{request.session.loggedInUser}}
+  </a>
+  <div class="dropdown-menu dropdown-menu-dark bg-dark" aria-labelledby="navbarDarkDropdownMenuLink">
+    <a class="dropdown-item" id="login-button" data-toggle="modal" data-target="#logoutModal">Login</a>
+  </div>
+</li>
+
+{% endif %}
