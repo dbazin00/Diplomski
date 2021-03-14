@@ -1,11 +1,11 @@
 from django.shortcuts import render, redirect
 from django.core.files.storage import FileSystemStorage
 from .forms import StudentForm, LoginForm
-from .models import Student
+from .models import Student, Study
 
 # Create your views here.
 
-loggedInNavbar = [{"text": "Početna", "path": "/"}, {"text": "Kontakt", "path": "contact"}]
+loggedInNavbar = [{"text": "Početna", "path": "/"}, {"text": "Kolege", "path": "../studentList"}, {"text": "Kontakt", "path": "../contact"}]
 loggedOutNavbar = [{"text": "Početna", "path": "/"}, {"text": "Kontakt", "path": "contact"}, {"text": "Registracija", "path": "registration"}]
 
 def index(request):
@@ -15,11 +15,10 @@ def index(request):
 
 def contact(request):
     pathInfo = navbarPathInfo(request)
-    context = {"pathinfo": pathInfo, "active": "contact"}
+    context = {"pathinfo": pathInfo, "active": "../contact"}
     return render(request, "fesbbook_app/contact.html", context)
 
 def login(request):
-    
     if request.session.get("loggedInUser") != None:
         return redirect("/")
     
@@ -37,7 +36,6 @@ def login(request):
         return render(request, "fesbbook_app/login.html", context)
 
 def authoriseStudent(request, form):
-
     if form.is_valid():
         request.session["loggedInUser"] = request.POST.get("username")
         loggedInUser = Student.objects.get(username=request.session.get("loggedInUser"))
@@ -48,6 +46,9 @@ def authoriseStudent(request, form):
     return False
 
 def logout(request):
+    loggedInUser = Student.objects.get(username=request.session.get("loggedInUser"))
+    loggedInUser.isActive = False
+    loggedInUser.save()
     del request.session["loggedInUser"]
     return redirect("/")
 
@@ -68,24 +69,91 @@ def registration(request):
         context = {"pathinfo" : loggedOutNavbar, "active": "registration", "form": form}
         return render(request, "fesbbook_app/registration.html", context)
 
-def createStudent(request, newStudent):
-    
-    
+def createStudent(request, newStudent): 
     profile_image = request.FILES["profile_image"] if "profile_image" in request.FILES else False
 
-    if profile_image:
-        newStudent.profile_image = profile_image
-
-        fs = FileSystemStorage("media/profile_images")
-        name = fs.save(username + "_profile_image." + profile_image.name.rsplit("/", 1)[0], profile_image)
-        
     if newStudent.is_valid():
         form = newStudent.save(commit=False)
         form.isActive = False
+        
+        if profile_image:
+            fs = FileSystemStorage(location="media/profile_images")
+            newImage = fs.save(newStudent.data["username"] + "_profile_image." + profile_image.name.rsplit(".", 1)[1], profile_image)
+            fileurl = "profile_images" + fs.url(newImage)
+            form.profile_image = profile_image
+        else:
+            form.profile_image = "media/profile_images/default_profile_image.png"
+        
         form.save()
         return True
-        context = {"pathinfo" : loggedOutNavbar, "active": "registration","form": newStudent}
     return False
+
+def studentList(request):
+    if request.session.get("loggedInUser") == None:
+        return redirect("/")
+    
+    loggedInUser = Student.objects.get(username = request.session.get("loggedInUser"))
+    studentList = Student.objects.filter(study = loggedInUser.study).exclude(username = loggedInUser.username)
+    
+    pathInfo = navbarPathInfo(request)
+    context = {"pathinfo" : pathInfo, "active": "../studentList", "studentList": studentList}
+    return render(request, "fesbbook_app/studentList.html", context)
+
+def studentInfo(request, username):
+    if request.session.get("loggedInUser") == None:
+        return redirect("/")
+
+    if username == request.session.get("loggedInUser"):
+        return redirect("myProfile")
+
+    studentInfo = Student.objects.get(username = username)
+    pathInfo = navbarPathInfo(request)
+    context = {"pathinfo" : pathInfo, "active": "../studentList", "studentInfo": studentInfo}
+    return render(request, "fesbbook_app/studentInfo.html", context)    
+
+def myProfile(request):
+    if request.session.get("loggedInUser") == None:
+        return redirect("/")
+
+    myInfo = Student.objects.get(username = request.session.get("loggedInUser"))
+    pathInfo = navbarPathInfo(request)
+    context = {"pathinfo" : pathInfo, "studentInfo": myInfo}
+    return render(request, "fesbbook_app/myProfile.html", context)
+
+def editProfile(request):
+    if request.session.get("loggedInUser") == None:
+        return redirect("/") 
+    
+    if request.method == "POST":
+        myForm = StudentForm(request.POST, request.FILES)
+        profile_image = request.FILES["profile_image"] if "profile_image" in request.FILES else False
+
+        myInfo = Student.objects.get(username=request.session.get("loggedInUser"))
+        if profile_image:
+            if myInfo.profile_image.name.rsplit("/", 1)[1] != "default_profile_image.png":
+                fs = FileSystemStorage(location="media/profile_images")
+                fs.delete(name=myInfo.profile_image.name.rsplit("/", 1)[1])
+
+            
+            fs = FileSystemStorage(location="media/profile_images")
+            newImage = fs.save(myInfo.username + "_profile_image." + profile_image.name.rsplit(".", 1)[1], profile_image)
+            fileurl = "profile_images" + fs.url(newImage)
+            myInfo.profile_image = fileurl
+        myInfo.first_name = myForm.data.get("first_name")
+        myInfo.last_name = myForm.data.get("last_name")
+        myInfo.study = Study.objects.get(study_code=myForm.data.get("study"))
+        myInfo.year_of_enrollment = myForm.data.get("year_of_enrollment")
+
+        myInfo.save()       
+                
+        return redirect("../myProfile")
+
+    else:
+        myInfo = Student.objects.get(username = request.session.get("loggedInUser"))
+        myForm = StudentForm(instance = myInfo)
+        pathInfo = navbarPathInfo(request)
+        context = {"pathinfo" : pathInfo, "myInfo": myInfo, "myForm": myForm}
+        return render(request, "fesbbook_app/editProfile.html", context)
 
 def navbarPathInfo(request):
     if request.session.get("loggedInUser") == None:

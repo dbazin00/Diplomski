@@ -23,7 +23,7 @@ class Student(models.Model):
     username = models.CharField(max_length=50, unique=True, default=None)
     password = models.CharField(max_length=50, default=None)
     email = models.EmailField(max_length=50, unique=True, default=None)
-    profile_image = models.ImageField(blank=True, null=True, default="profile_images/default_profile_image.png", upload_to="profile_images")
+    profile_image = models.ImageField(blank=True, null=True, upload_to="profile_images")
     year_of_enrollment = models.IntegerField(choices=YEAR_CHOICES , default=current_year)
     birthday = models.DateField(default=datetime.date.today)
     study = models.ForeignKey(Study, on_delete=models.CASCADE, default=None)

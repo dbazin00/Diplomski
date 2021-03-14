@@ -1,0 +1,53 @@
+{% extends "fesbbook_app/base.html" %} 
+
+{% block additional_styles %}
+<style>
+  img {
+    float: left;
+    width: 100px;
+    height: 100px;
+    background-size: cover;
+    border-radius: 50%;
+    border: 5px solid #007bff;
+  }
+  .row:hover {
+    transition: 0.5s ease;
+    background-color: grey;
+  }
+  .vcenter {
+    display: flex;
+    align-items: center;
+  }
+  .isActive {
+    position: absolute;
+    left: 110px;
+    top: 0;
+    height: 25px;
+    width: 25px;
+    background-color: green;
+    color: green;
+    border-radius: 50%;
+  }
+</style>
+{% endblock additional_styles %}
+
+{% block title %}Kolege{% endblock title %} 
+
+{% block content %} {% for student in studentList %}
+<div
+  class="row mt-2 pt-4 pb-4"
+  style="cursor: pointer"
+  onclick="window.location='studentList/{{student.username}}';"
+>
+  <div class="col-md-2">
+    <img src="{{student.profile_image}}" alt="your image" />
+    {% if student.isActive %}
+    <div class="isActive"></div>
+    {% endif %}
+  </div>
+  <div class="col-md-6 vcenter"><h4>{{student.username}}</h4></div>
+  <div class="col-md-4 vcenter">{{student.study.study_name}}</div>
+</div>
+{% endfor %}
+
+{% endblock content %}

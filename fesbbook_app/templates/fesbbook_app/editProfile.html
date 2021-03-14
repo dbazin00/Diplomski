@@ -1,7 +1,6 @@
-{% extends "fesbbook_app/base.html" %} 
+{% extends "fesbbook_app/base.html"%}
 
 {% load crispy_forms_tags %}
-{% load static %}
 
 {% block additional_styles %}
 <style>
@@ -40,7 +39,7 @@
     font-size: 30px;
     color: #007bff;
   }
-  #editText {
+  .editText {
     transition: 0.5s ease;
     position: absolute;
     bottom: 0;
@@ -51,7 +50,7 @@
     line-height: 200px;
     background-color: rgba(0, 123, 255, 0.5);
   }
-  #editText:hover {
+  .editText:hover {
     transition: 0.5s ease;
     opacity: 1;
   }
@@ -60,16 +59,14 @@
     margin-bottom: 30px;
   }
 </style>
-{% endblock additional_styles %}
+{% endblock additional_styles %} 
 
-{% block title %}Registracija{% endblock title%} 
+{% block title %} {{myInfo.username}} {% endblock title %}
 
 {% block content %}
-<h1>Registracija</h1>
-<br />
 <form
   id="form"
-  action=""
+  action="editProfile"
   method="POST"
   enctype="multipart/form-data"
   autocomplete="off"
@@ -86,7 +83,7 @@
     <label for="profile_image_input" id="image_label">
       <img
         id="show_profile_image"
-        src="profile_images/default_profile_image.png"
+        src="{{MEDIA_URL}}{{myInfo.profile_image}}"
         alt="your image"
       />
       <div class="editText" id="editText">
@@ -102,51 +99,35 @@
     </div>
   </div>
   <div class="row">
-    <div class="col-md-12">{{form.first_name|as_crispy_field}}</div>
+    <div class="col-md-12">{{myForm.first_name|as_crispy_field}}</div>
   </div>
   <div class="row">
-    <div class="col-md-12">{{form.last_name|as_crispy_field}}</div>
+    <div class="col-md-12">{{myForm.last_name|as_crispy_field}}</div>
+  </div>
+  <!-- <div class="row">
+    <div class="col-md-12">{{myForm.password|as_crispy_field}}</div>
   </div>
   <div class="row">
-    <div class="col-md-12">{{form.username|as_crispy_field}}</div>
-  </div>
+    <div class="col-md-12">{{myForm.password_confirm|as_crispy_field}}</div>
+  </div> -->
   <div class="row">
-    <div class="col-md-12">{{form.password|as_crispy_field}}</div>
-  </div>
-  <div class="row">
-    <div class="col-md-12">{{form.password_confirm|as_crispy_field}}</div>
-  </div>
-  <div class="row">
-    <div class="col-md-12">{{form.email|as_crispy_field}}</div>
-  </div>
-  <div class="row">
-    <div class="col-md-12">{{form.study|as_crispy_field}}</div>
-  </div>
-  <div class="row">
-    <div class="col-md-4">{{form.year_of_enrollment|as_crispy_field}}</div>
-    <div class="col-md-4">{{form.birthday|as_crispy_field}}</div>
-    <div class="col-md-4">{{form.gender|as_crispy_field}}</div>
+    <div class="col-md-6">{{myForm.study|as_crispy_field}}</div>
+    <div class="col-md-6">{{myForm.year_of_enrollment|as_crispy_field}}</div>
   </div>
   <div class="row">
     <div class="col-md-12" style="margin-top: 30px">
       <button type="submit" class="btn btn-success btn-block btn-lg">
-        <i class="fas fa-database"></i>
-        Registracija
+        <i class="fas fa-save"></i>
+        Spremi promjene
       </button>
     </div>
   </div>
   <div class="row">
-    <div class="col-md-6" style="margin-top: 20px">
-      <a href="{% url 'index' %}" class="btn btn-secondary btn-block btn-lg">
-        <i class="far fa-hand-point-left"></i>
-        Povratak na početnu stranicu
+    <div class="col-md-12" style="margin-top: 20px">
+      <a href="{% url 'myProfile' %}" class="btn btn-danger btn-block btn-lg">
+        <i class="fas fa-trash-alt"></i>
+        Odbaci promjene
       </a>
-    </div>
-    <div class="col-md-6" style="margin-top: 20px">
-      <button type="reset" class="btn btn-danger btn-block btn-lg">
-        <i class="far fa-trash-alt"></i>
-        Brisanje unesnih podataka
-      </button>
     </div>
   </div>
 </form>

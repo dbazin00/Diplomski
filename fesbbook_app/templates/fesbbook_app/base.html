@@ -40,6 +40,8 @@
       }
       .navbar-nav > li > .dropdown-menu a:hover {
         background-color: grey;
+        color: white;
+        cursor: pointer;
       }
     </style>
     {% block additional_styles %} {% endblock additional_styles %}
@@ -93,7 +95,7 @@
     ></script>
     <script>
       document.getElementById("logoutConfirmButton").onclick = () =>
-        (location.href = "logout");
+        (location.href = "../logout");
     </script>
     {% block script %} {% endblock script %}
   </body>
