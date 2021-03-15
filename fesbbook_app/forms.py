@@ -43,7 +43,7 @@ class StudentForm(forms.ModelForm):
         if Student.objects.filter(username=username).exists() or username in INVALID_USERNAMES:
             self.add_error("username", "Neispravno korisničko ime")
             
-        if validate_email(email) != None:
+        if validate_email(email) != None or Student.objects.filter(email=email).exists():
             self.add_error("email", "Neispravna e-mail adresa")
 
         if password != password_confirm:
@@ -66,3 +66,24 @@ class LoginForm(forms.Form):
             if student.get(username=self.cleaned_data.get("username")).password != self.cleaned_data.get("password"):
                 self.add_error("password", "Neispravna lozinka")
         return self.cleaned_data
+
+class PasswordForm(forms.Form):
+    loggedInUser = forms.CharField(max_length=50)
+    old_password = forms.CharField(max_length=50, label="Stara lozinka", widget=forms.PasswordInput(attrs={"type": "password"}))
+    new_password = forms.CharField(max_length=50, label="Nova Lozinka", widget=forms.PasswordInput(attrs={"type": "password"}))
+    confirm_new_password = forms.CharField(max_length=50, label="Potvrda nove lozinke", widget=forms.PasswordInput(attrs={"type": "password"}))
+
+    def __init__(self, *args, **kwargs):
+        super(PasswordForm, self).__init__(*args, **kwargs)
+        self.data = self.data.copy()
+
+    def clean(self):
+        myInfo = Student.objects.get(username=self.cleaned_data.get("loggedInUser"))
+        
+        if myInfo.password != self.cleaned_data.get("old_password"):
+            self.add_error("old_password", "Neispravna stara lozinka")
+        if self.cleaned_data.get("new_password") != self.cleaned_data.get("confirm_new_password"):
+            print(self.cleaned_data.get("loggedInUser"))
+            self.add_error("new_password", "Nova lozinka nije potvrđena")
+            self.add_error("confirm_new_password", "Nova lozinka nije potvrđena")
+        

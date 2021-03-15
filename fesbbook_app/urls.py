@@ -12,4 +12,5 @@ urlpatterns = [
     path("myProfile", views.myProfile, name="myProfile"),
     path("studentList/<str:username>", views.studentInfo, name="studentInfo"),
     path("editProfile", views.editProfile, name="editProfile"),
+    path("newPassword", views.newPassword, name="newPassword"),
 ]

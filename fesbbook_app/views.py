@@ -1,6 +1,6 @@
 from django.shortcuts import render, redirect
 from django.core.files.storage import FileSystemStorage
-from .forms import StudentForm, LoginForm
+from .forms import StudentForm, LoginForm, PasswordForm
 from .models import Student, Study
 
 # Create your views here.
@@ -154,6 +154,32 @@ def editProfile(request):
         pathInfo = navbarPathInfo(request)
         context = {"pathinfo" : pathInfo, "myInfo": myInfo, "myForm": myForm}
         return render(request, "fesbbook_app/editProfile.html", context)
+
+def newPassword(request):
+    if request.session.get("loggedInUser") == None:
+        return redirect("/")
+    
+    if request.method == "POST":
+        new_password = PasswordForm(request.POST)
+        new_password.data = {**new_password.data.dict(), 'loggedInUser': request.session.get("loggedInUser")}
+        if new_password.is_valid():
+            myInfo = Student.objects.get(username = request.session.get("loggedInUser"))
+            myInfo.password = new_password.data["new_password"]
+            myInfo.save()
+            return redirect("../myProfile")
+
+        else:
+            pathInfo = navbarPathInfo(request)
+            context = {"pathinfo" : pathInfo, "password": new_password}
+            return render(request, "fesbbook_app/newPassword.html", context)
+
+    else:
+        password = PasswordForm()
+        password.data = {**password.data.dict(), 'loggedInUser': request.session.get("loggedInUser")}
+        pathInfo = navbarPathInfo(request)
+        context = {"pathinfo" : pathInfo, "password": password}
+        return render(request, "fesbbook_app/newPassword.html", context)
+
 
 def navbarPathInfo(request):
     if request.session.get("loggedInUser") == None:
