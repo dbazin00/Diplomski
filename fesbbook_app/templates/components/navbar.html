@@ -27,7 +27,11 @@
     {{request.session.loggedInUser}}
   </a>
   <div class="dropdown-menu dropdown-menu-dark bg-dark" aria-labelledby="navbarDarkDropdownMenuLink">
+    {% if active == "../myProfile" %}
+    <a class="dropdown-item" href="../myProfile" style="color: white;">Moj profil</a>
+    {% else %}
     <a class="dropdown-item" href="../myProfile">Moj profil</a>
+    {% endif %}
     <a class="dropdown-item" id="login-button" data-toggle="modal" data-target="#logoutModal">Odjava</a>
   </div>
 </li>

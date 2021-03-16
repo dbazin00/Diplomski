@@ -82,8 +82,7 @@ def createStudent(request, newStudent):
             fileurl = "profile_images" + fs.url(newImage)
             form.profile_image = profile_image
         else:
-            form.profile_image = "media/profile_images/default_profile_image.png"
-        
+            form.profile_image = "profile_images/default_profile_image.png"      
         form.save()
         return True
     return False
@@ -117,7 +116,7 @@ def myProfile(request):
 
     myInfo = Student.objects.get(username = request.session.get("loggedInUser"))
     pathInfo = navbarPathInfo(request)
-    context = {"pathinfo" : pathInfo, "studentInfo": myInfo}
+    context = {"pathinfo" : pathInfo, "active": "../myProfile", "studentInfo": myInfo}
     return render(request, "fesbbook_app/myProfile.html", context)
 
 def editProfile(request):
@@ -127,18 +126,22 @@ def editProfile(request):
     if request.method == "POST":
         myForm = StudentForm(request.POST, request.FILES)
         profile_image = request.FILES["profile_image"] if "profile_image" in request.FILES else False
-
         myInfo = Student.objects.get(username=request.session.get("loggedInUser"))
         if profile_image:
             if myInfo.profile_image.name.rsplit("/", 1)[1] != "default_profile_image.png":
                 fs = FileSystemStorage(location="media/profile_images")
                 fs.delete(name=myInfo.profile_image.name.rsplit("/", 1)[1])
-
             
             fs = FileSystemStorage(location="media/profile_images")
             newImage = fs.save(myInfo.username + "_profile_image." + profile_image.name.rsplit(".", 1)[1], profile_image)
             fileurl = "profile_images" + fs.url(newImage)
             myInfo.profile_image = fileurl
+
+        if request.POST.get("is_image_removed")=="True" and myInfo.profile_image.name.rsplit("/", 1)[1] != "default_profile_image.png":
+            fs = FileSystemStorage(location="media/profile_images")
+            fs.delete(name=myInfo.profile_image.name.rsplit("/", 1)[1])
+            myInfo.profile_image = "profile_images/default_profile_image.png"
+                
         myInfo.first_name = myForm.data.get("first_name")
         myInfo.last_name = myForm.data.get("last_name")
         myInfo.study = Study.objects.get(study_code=myForm.data.get("study"))
@@ -152,7 +155,7 @@ def editProfile(request):
         myInfo = Student.objects.get(username = request.session.get("loggedInUser"))
         myForm = StudentForm(instance = myInfo)
         pathInfo = navbarPathInfo(request)
-        context = {"pathinfo" : pathInfo, "myInfo": myInfo, "myForm": myForm}
+        context = {"pathinfo" : pathInfo, "active": "../myProfile", "myInfo": myInfo, "myForm": myForm}
         return render(request, "fesbbook_app/editProfile.html", context)
 
 def newPassword(request):
@@ -170,16 +173,15 @@ def newPassword(request):
 
         else:
             pathInfo = navbarPathInfo(request)
-            context = {"pathinfo" : pathInfo, "password": new_password}
+            context = {"pathinfo" : pathInfo, "active": "../myProfile", "password": new_password}
             return render(request, "fesbbook_app/newPassword.html", context)
 
     else:
         password = PasswordForm()
         password.data = {**password.data.dict(), 'loggedInUser': request.session.get("loggedInUser")}
         pathInfo = navbarPathInfo(request)
-        context = {"pathinfo" : pathInfo, "password": password}
+        context = {"pathinfo" : pathInfo, "active": "../myProfile", "password": password}
         return render(request, "fesbbook_app/newPassword.html", context)
-
 
 def navbarPathInfo(request):
     if request.session.get("loggedInUser") == None:

@@ -29,7 +29,7 @@
     transition: 0.5s ease;
     background-color: rgba(0, 123, 255, 1);
   }
-  #profile_image_input {
+  #profile_image_input, #is_image_removed {
     display: none;
   }
   .fa-pen {
@@ -58,6 +58,10 @@
     margin: auto;
     margin-bottom: 30px;
   }
+  #imageRemove {
+    margin: auto;
+    margin-bottom: 30px;
+  }
 </style>
 {% endblock additional_styles %} 
 
@@ -80,9 +84,11 @@
       onchange="readURL(this);"
       accept="image/*"
     />
+    <input id="is_image_removed" type="text" name="is_image_removed" readonly>
     <label for="profile_image_input" id="image_label">
       <img
         id="show_profile_image"
+        name="show_profile_image"
         src="{{MEDIA_URL}}{{myInfo.profile_image}}"
         alt="your image"
       />
@@ -99,17 +105,17 @@
     </div>
   </div>
   <div class="row">
+    <button type="button" class="btn btn-primary btn-sm" id="imageRemove">
+      <i class="far fa-trash-alt"></i>
+      Ukloni sliku
+    </button>
+  </div>
+  <div class="row">
     <div class="col-md-12">{{myForm.first_name|as_crispy_field}}</div>
   </div>
   <div class="row">
     <div class="col-md-12">{{myForm.last_name|as_crispy_field}}</div>
   </div>
-  <!-- <div class="row">
-    <div class="col-md-12">{{myForm.password|as_crispy_field}}</div>
-  </div>
-  <div class="row">
-    <div class="col-md-12">{{myForm.password_confirm|as_crispy_field}}</div>
-  </div> -->
   <div class="row">
     <div class="col-md-6">{{myForm.study|as_crispy_field}}</div>
     <div class="col-md-6">{{myForm.year_of_enrollment|as_crispy_field}}</div>
@@ -141,10 +147,9 @@
 
       reader.onload = function (e) {
         $("#show_profile_image").attr("src", e.target.result);
+        document.getElementById("is_image_removed").value = "False";
       };
-
       reader.readAsDataURL(input.files[0]);
-      console.log(input.files[0]);
     }
   }
 
@@ -163,5 +168,12 @@
     }
     
   }
+
+  document.getElementById("imageRemove").onclick = () =>
+  {
+    document.getElementById("show_profile_image").src = "profile_images/default_profile_image.png"
+    document.getElementById("is_image_removed").value = "True"
+  }
+
 </script>
 {% endblock script %}

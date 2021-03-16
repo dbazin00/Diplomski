@@ -23,10 +23,12 @@ class Student(models.Model):
     username = models.CharField(max_length=50, unique=True, default=None)
     password = models.CharField(max_length=50, default=None)
     email = models.EmailField(max_length=50, unique=True, default=None)
-    profile_image = models.ImageField(blank=True, null=True, upload_to="profile_images")
+    profile_image = models.ImageField(blank=True, null=True)
     year_of_enrollment = models.IntegerField(choices=YEAR_CHOICES , default=current_year)
     birthday = models.DateField(default=datetime.date.today)
     study = models.ForeignKey(Study, on_delete=models.CASCADE, default=None)
     gender = models.CharField(max_length=1, choices=GENDER_CHOICES, default="M")
     isActive = models.BooleanField(default=False)
-    
+
+class Message(models.Model):
+    message = models.CharField(max_length=500, default=None)

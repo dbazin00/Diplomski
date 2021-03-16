@@ -21,7 +21,7 @@
     margin-right: auto;
   }
   #username_display {
-    text-align: center;
+    margin: auto;
   }
   .isActive {
     position: absolute;
@@ -49,8 +49,12 @@
     {% if studentInfo.isActive %}
     <div class="isActive"></div>
     {% endif %}
-    <h1 id="username_display">{{studentInfo.username}}</h1>
+    
   </div>
+  
+</div>
+<div class="row">
+  <h1 id="username_display">{{studentInfo.username}}</h1>
 </div>
 <div class="row" id="label">
   <div class="col-md-6">Ime</div>

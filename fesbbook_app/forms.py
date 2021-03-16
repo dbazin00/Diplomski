@@ -2,7 +2,7 @@ from django import forms
 from .models import Student
 from django.core.validators import validate_email
 
-INVALID_USERNAMES = ["None"]
+INVALID_USERNAMES = ["None", "default"]
 
 class StudentForm(forms.ModelForm):
     password_confirm = forms.CharField(max_length=50, label="Potvrda lozinke", widget=forms.PasswordInput())
@@ -83,7 +83,6 @@ class PasswordForm(forms.Form):
         if myInfo.password != self.cleaned_data.get("old_password"):
             self.add_error("old_password", "Neispravna stara lozinka")
         if self.cleaned_data.get("new_password") != self.cleaned_data.get("confirm_new_password"):
-            print(self.cleaned_data.get("loggedInUser"))
             self.add_error("new_password", "Nova lozinka nije potvrđena")
             self.add_error("confirm_new_password", "Nova lozinka nije potvrđena")
         
