@@ -49,13 +49,29 @@
     {% if studentInfo.isActive %}
     <div class="isActive"></div>
     {% endif %}
-    
   </div>
-  
 </div>
 <div class="row">
   <h1 id="username_display">{{studentInfo.username}}</h1>
 </div>
+
+<div class="row">
+  <div class="col-md-12" style="margin-top: 20px">
+    <a href="../conversation/{{studentInfo.username}}" class="btn btn-success btn-block btn-lg">
+      <i class="far fa-comments"></i>
+      Pošalji poruku
+    </a>
+  </div>
+</div>
+<div class="row">
+  <div class="col-md-12" style="margin-top: 20px">
+    <a href="{% url 'studentList' %}" class="btn btn-secondary btn-block btn-lg">
+      <i class="far fa-hand-point-left"></i>
+      Povratak na listu kolega
+    </a>
+  </div>
+</div>
+
 <div class="row" id="label">
   <div class="col-md-6">Ime</div>
 </div>
@@ -92,15 +108,6 @@
 <div class="row">
   <div class="col-md-6">
     <h4>{{studentInfo.gender}}</h4>
-  </div>
-</div>
-
-<div class="row">
-  <div class="col-md-12" style="margin-top: 20px">
-    <a href="{% url 'studentList' %}" class="btn btn-secondary btn-block btn-lg">
-      <i class="far fa-hand-point-left"></i>
-      Povratak na listu kolega
-    </a>
   </div>
 </div>
 {% endblock content %}

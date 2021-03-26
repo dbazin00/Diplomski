@@ -29,9 +29,6 @@
     transition: 0.5s ease;
     background-color: rgba(0, 123, 255, 1);
   }
-  #profile_image_input, #is_image_removed {
-    display: none;
-  }
   .fa-pen {
     position: absolute;
     right: 5px;
@@ -70,7 +67,7 @@
 {% block content %}
 <form
   id="form"
-  action="editProfile"
+  action=""
   method="POST"
   enctype="multipart/form-data"
   autocomplete="off"
@@ -83,8 +80,9 @@
       name="profile_image"
       onchange="readURL(this);"
       accept="image/*"
+      hidden 
     />
-    <input id="is_image_removed" type="text" name="is_image_removed" readonly>
+    <input id="is_image_removed" type="hidden" name="is_image_removed" readonly>
     <label for="profile_image_input" id="image_label">
       <img
         id="show_profile_image"

@@ -1,11 +1,13 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, reverse
 from django.core.files.storage import FileSystemStorage
+from django.db.models import Q
+
 from .forms import StudentForm, LoginForm, PasswordForm
-from .models import Student, Study
+from .models import Student, Study, Message, ChatRoom
 
 # Create your views here.
 
-loggedInNavbar = [{"text": "Početna", "path": "/"}, {"text": "Kolege", "path": "../studentList"}, {"text": "Kontakt", "path": "../contact"}]
+loggedInNavbar = [{"text": "Početna", "path": "/"}, {"text": "Kolege", "path": "../studentList"}, {"text": "Razgovori", "path": "../conversation"}, {"text": "Kontakt", "path": "../contact"}]
 loggedOutNavbar = [{"text": "Početna", "path": "/"}, {"text": "Kontakt", "path": "contact"}, {"text": "Registracija", "path": "registration"}]
 
 def index(request):
@@ -80,7 +82,7 @@ def createStudent(request, newStudent):
             fs = FileSystemStorage(location="media/profile_images")
             newImage = fs.save(newStudent.data["username"] + "_profile_image." + profile_image.name.rsplit(".", 1)[1], profile_image)
             fileurl = "profile_images" + fs.url(newImage)
-            form.profile_image = profile_image
+            form.profile_image = fileurl
         else:
             form.profile_image = "profile_images/default_profile_image.png"      
         form.save()
@@ -157,6 +159,53 @@ def editProfile(request):
         pathInfo = navbarPathInfo(request)
         context = {"pathinfo" : pathInfo, "active": "../myProfile", "myInfo": myInfo, "myForm": myForm}
         return render(request, "fesbbook_app/editProfile.html", context)
+
+def conversations(request):
+    if request.session.get("loggedInUser") == None:
+        return redirect("/")
+
+    loggedInUser = Student.objects.get(username = request.session.get("loggedInUser"))
+
+    myChatRooms = ChatRoom.objects.filter(Q(first_student = loggedInUser) | Q(second_student = loggedInUser)).all()
+
+    lastMessages = []
+
+    for currentChatRoom in myChatRooms:
+        lastMessage = Message.objects.filter(chat_room=currentChatRoom).last()
+        lastMessage.unreadMessages = Message.objects.filter(Q(chat_room=currentChatRoom) & Q(receiver=loggedInUser)).count()
+        lastMessages.append(lastMessage)
+
+    lastMessages.sort(key=lambda x: x.date_sent, reverse=True)
+
+    pathInfo = navbarPathInfo(request)
+
+    context = {"pathinfo" : pathInfo, "active": "../conversation", "lastMessages": lastMessages}
+    return render(request, "fesbbook_app/conversations.html", context)
+
+def messages(request, username):
+    if request.session.get("loggedInUser") == None:
+        return redirect("/")
+    if request.session.get("loggedInUser") == username:
+        return redirect("../conversation")
+    if not Student.objects.filter(username=username).exists():
+        return redirect("../conversation")
+
+    loggedInUser = Student.objects.get(username=request.session.get("loggedInUser"))
+    chatFriend = Student.objects.get(username=username)
+
+    # if request.method == "POST":
+    #     newMessage = Message()
+    #     newMessage.message = request.POST.get("message_text")
+    #     newMessage.sender = loggedInUser
+    #     newMessage.receiver = chatFriend
+    #     newMessage.save()
+    #     return redirect("messages", username=username)
+
+    pathInfo = navbarPathInfo(request)
+    allMessages = Message.objects.filter((Q(sender=loggedInUser) | Q(receiver=loggedInUser)) & (Q(sender=chatFriend) | Q(receiver=chatFriend)))
+    allMessages = allMessages.order_by("date_sent").reverse()
+    context = {"pathinfo" : pathInfo, "active": "../conversation", "title": username, "allMessages": allMessages}
+    return render(request, "fesbbook_app/messages.html", context)
 
 def newPassword(request):
     if request.session.get("loggedInUser") == None:

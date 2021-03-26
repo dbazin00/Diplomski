@@ -13,4 +13,6 @@ urlpatterns = [
     path("studentList/<str:username>", views.studentInfo, name="studentInfo"),
     path("editProfile", views.editProfile, name="editProfile"),
     path("newPassword", views.newPassword, name="newPassword"),
+    path("conversation", views.conversations, name="conversations"),
+    path("conversation/<str:username>", views.messages, name="messages"),
 ]

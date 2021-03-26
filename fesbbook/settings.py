@@ -39,7 +39,8 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'fesbbook_app',
-    'crispy_forms'
+    'crispy_forms',
+    'channels',
 ]
 
 CRISPY_TEMPLATE_PACK = 'bootstrap4'
@@ -55,6 +56,7 @@ MIDDLEWARE = [
 ]
 
 ROOT_URLCONF = 'fesbbook.urls'
+ASGI_APPLICATION = 'fesbbook.asgi.application'
 
 TEMPLATES = [
     {
@@ -114,7 +116,7 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = 'en-us'
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'CET'
 
 USE_I18N = True
 
@@ -127,6 +129,15 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/3.1/howto/static-files/
 
 STATIC_URL = '/static/'
+
+CHANNEL_LAYERS = {
+    "default": {
+        "BACKEND": "channels_redis.core.RedisChannelLayer",
+        "CONFIG": {
+            "hosts": [("127.0.0.1", 6379)],
+        },
+    },
+}
 
 # MEDIA_ROOT = BASE_DIR / 'media/profile_images'
 MEDIA_ROOT = os.path.join(BASE_DIR, "media")
