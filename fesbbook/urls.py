@@ -25,3 +25,8 @@ urlpatterns = [
 ]
 if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL, document_root = settings.MEDIA_ROOT)
+
+handler400 = "fesbbook_app.views.error_400_view"
+handler403 = "fesbbook_app.views.error_403_view"
+handler404 = "fesbbook_app.views.error_404_view"
+handler500 = "fesbbook_app.views.error_500_view"

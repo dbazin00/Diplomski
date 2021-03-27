@@ -128,7 +128,7 @@ def studentList(request):
         baseURL = request.get_full_path().split("page")[0]
     if baseURL == "/studentList":
         baseURL += "?"
-    elif not baseURL.endswith("&"):
+    elif not baseURL.endswith("?") and not baseURL.endswith("&"):
         baseURL += "&"
     
     pathInfo = navbarPathInfo(request)
@@ -272,3 +272,23 @@ def navbarPathInfo(request):
         return loggedOutNavbar
     else:
         return loggedInNavbar
+
+def error_400_view(request, exception):
+    pathInfo = navbarPathInfo(request)
+    context = {"pathinfo" : pathInfo }
+    return render(request, "fesbbook_app/error_pages/404.html", context)
+
+def error_403_view(request, exception):
+    pathInfo = navbarPathInfo(request)
+    context = {"pathinfo" : pathInfo }
+    return render(request, "fesbbook_app/error_pages/404.html", context)
+
+def error_404_view(request, exception):
+    pathInfo = navbarPathInfo(request)
+    context = {"pathinfo" : pathInfo }
+    return render(request, "fesbbook_app/error_pages/404.html", context)
+
+def error_500_view(request):
+    pathInfo = navbarPathInfo(request)
+    context = {"pathinfo" : pathInfo }
+    return render(request, "fesbbook_app/error_pages/500.html", context)
