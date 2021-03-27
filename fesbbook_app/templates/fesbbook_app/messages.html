@@ -43,12 +43,13 @@
     width: 25px;
     border-radius: 50%;
   }
-  img {
+  #senderImage, #receiverImage {
     float: left;
     width: 100px;
     height: 100px;
     background-size: cover;
     border-radius: 50%;
+    object-fit: cover;
   }
   #messagesList {
     margin-bottom: 50px;
@@ -61,8 +62,16 @@
   }
 </style>
 
-{% endblock additional_styles %} {% block content %}
+{% endblock additional_styles %} 
+
+{% block content %}
 <input type="hidden" value="{{request.session.loggedInUser}}" id="loggedInUser">
+{% if allMessages|length == 0 %}
+<div id="noMessages">
+<br>
+Trenutno nemate poruka s korisnikom <b>{{title}}</b>. Pošaljite poruku!
+</div>
+{% endif %}
 <div id="messagesList">
   {% for message in allMessages %}
   {% if message.sender.username == request.session.loggedInUser %}
@@ -142,7 +151,9 @@
     >
   </div>
 </form>
-{% endblock footer %} {% block script %}
+{% endblock footer %}
+
+{% block script %}
 <script
   src="https://cdnjs.cloudflare.com/ajax/libs/reconnecting-websocket/1.0.0/reconnecting-websocket.min.js"
   integrity="sha512-B4skI5FiLurS86aioJx9VfozI1wjqrn6aTdJH+YQUmCZum/ZibPBTX55k5d9XM6EsKePDInkLVrN7vPmJxc1qA=="
@@ -199,6 +210,7 @@
         messageData.date_sent + "</div></div><br>" + document.getElementById("messagesList").innerHTML;
       clean();
     }
+    document.getElementById("noMessages").innerHTML = ""
 
   };
   socket.onopen = function (e) {
@@ -213,6 +225,7 @@
       };
       socket.send(JSON.stringify(finalData));
       formData.reset();
+      document.getElementById("noMessages").innerHTML = ""
     };
   };
   socket.onerror = function (e) {

@@ -1,8 +1,8 @@
-{% extends "fesbbook_app/base.html" %} 
+{% extends "fesbbook_app/base.html" %}
 
 {% block additional_styles %}
 <style>
-  img {
+  #profile_image_display {
     float: left;
     width: 100px;
     height: 100px;
@@ -28,26 +28,112 @@
     color: green;
     border-radius: 50%;
   }
+  .pagination > li > a {
+    background-color: #6c757d;
+    color: white;
+  }
+  .pagination > .disabled > a {
+    background-color: #6c757d !important;
+  }
+  .disabled > a > span {
+    color: white !important;
+    opacity: 0.5 !important;
+  }
+  .card:hover {
+    transition: 0.5s ease;
+    background-color: #6c757d !important;
+    cursor: pointer;
+  }
+  .card {
+    transition: 0.5s ease;
+  }
+  .isActive {
+    position: absolute;
+    left: 110px;
+    top: 0;
+    height: 25px;
+    width: 25px;
+    border-radius: 50%;
+  }
 </style>
-{% endblock additional_styles %}
+{% endblock additional_styles %} 
 
-{% block title %}Kolege{% endblock title %} 
+{% block title %}Kolege{% endblock title %}
 
-{% block content %} {% for student in studentList %}
+{% block content %}
+<br />
+<form class="form-inline my-2 my-lg-0" method="GET">
+  <div class="input-group">
+    <div class="form-outline">
+      <input
+        type="search"
+        id="form1"
+        class="form-control"
+        value="{{request.GET.username}}"
+        placeholder="Korisničko ime..."
+        name="username"
+        autocomplete="off"
+      />
+    </div>
+    <button type="submit" class="btn btn-primary">
+      <i class="fas fa-search"></i>
+    </button>
+  </div>
+  <div class="form-check m-4">
+    <input
+      class="form-check-input"
+      type="checkbox"
+      value="False"
+      id="flexCheckDefault"
+      name="study"
+    />
+    <label class="form-check-label" for="flexCheckDefault">
+      Prikaži samo moj smjer
+    </label>
+  </div>
+</form>
+{% if items|length == 0 %} 
+Ne postoji korisnik s traženim podacima. Povratak na
+<a href="studentList">listu svih studenata</a>. 
+{% endif %} 
+{% include "components/pagination.html" %}
+
+{% for student in items %}
 <div
-  class="row mt-2 pt-4 pb-4"
-  style="cursor: pointer"
+  class="card flex-row flex-wrap bg-dark"
   onclick="window.location='studentList/{{student.username}}';"
 >
-  <div class="col-md-2">
-    <img src="{{student.profile_image}}" alt="your image" />
+  <div class="card-header border-0">
+    <img
+      src="{{student.profile_image}}"
+      alt="Profile image"
+      id="profile_image_display"
+    />
     {% if student.isActive %}
-    <div class="isActive"></div>
+    <div class="isActive bg-success"></div>
     {% endif %}
   </div>
-  <div class="col-md-6 vcenter"><h4>{{student.username}}</h4></div>
-  <div class="col-md-4 vcenter">{{student.study.study_name}}</div>
+  <div class="card-block px-2">
+    <h4 class="card-title">{{student.username}}</h4>
+    <p class="card-text">{{student.study}}</p>
+  </div>
+  <div class="card-footer w-100">
+    {% if student.isActive %} 
+    Aktivan 
+    {% else %}
+    Zadnja aktivnost
+    {% endif %}
+  </div>
 </div>
+<br />
 {% endfor %}
+{% include "components/pagination.html" %} 
 
 {% endblock content %}
+{% block script %}
+<script>
+  document.getElementById("flexCheckDefault").onclick = () => {
+    document.getElementById("flexCheckDefault").value = "True";
+  };
+</script>
+{% endblock script %}

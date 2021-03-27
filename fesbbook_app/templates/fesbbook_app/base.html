@@ -43,6 +43,10 @@
         color: white;
         cursor: pointer;
       }
+      #logoImage {
+        height: 50px;
+        filter: invert(100%);
+      }
     </style>
     {% block additional_styles %} {% endblock additional_styles %}
   </head>
@@ -51,7 +55,7 @@
       class="navbar fixed-top p-3 navbar-expand-lg navbar-dark bg-dark"
       id="navigation"
     >
-      <a class="navbar-brand" href="/">Navbar</a>
+      <a class="navbar-brand" href="/"><img src="{% static 'images/logo.png' %}" id="logoImage"/></a>
       <button
         class="navbar-toggler"
         type="button"

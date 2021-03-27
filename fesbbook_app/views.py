@@ -1,6 +1,7 @@
 from django.shortcuts import render, redirect, reverse
 from django.core.files.storage import FileSystemStorage
 from django.db.models import Q
+from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 
 from .forms import StudentForm, LoginForm, PasswordForm
 from .models import Student, Study, Message, ChatRoom
@@ -94,10 +95,44 @@ def studentList(request):
         return redirect("/")
     
     loggedInUser = Student.objects.get(username = request.session.get("loggedInUser"))
-    studentList = Student.objects.filter(study = loggedInUser.study).exclude(username = loggedInUser.username)
+
+    fullQuerry = Q()
+
+    if request.GET.get("username") != None:
+        fullQuerry = fullQuerry & Q(username__contains=request.GET.get("username"))
+    if request.GET.get("study"):
+        fullQuerry = fullQuerry & Q(study = loggedInUser.study)
+            
+    studentList = Student.objects.filter(fullQuerry).exclude(username = loggedInUser.username)
+
+    paginator = Paginator(studentList, 1)
+    page = request.GET.get("page")
+
+    try:
+        items = paginator.page(page)
+    except PageNotAnInteger:
+        items = paginator.page(1)
+    except EmptyPage:
+        items.paginator.page(paginator.num_pages)
+
+    index = items.number - 1
+    max_index = len(paginator.page_range)
+    start_index = index - 5 if index >= 5 else 0
+    end_index = index + 5 if index <= max_index - 5 else max_index
+    page_range = paginator.page_range[start_index:end_index]
+
+    print(request.get_full_path())
+    baseURL = request.get_full_path()
+
+    if "page" in request.get_full_path():
+        baseURL = request.get_full_path().split("page")[0]
+    if baseURL == "/studentList":
+        baseURL += "?"
+    elif not baseURL.endswith("&"):
+        baseURL += "&"
     
     pathInfo = navbarPathInfo(request)
-    context = {"pathinfo" : pathInfo, "active": "../studentList", "studentList": studentList}
+    context = {"pathinfo" : pathInfo, "active": "../studentList", "studentList": studentList, "items": items, "page_range": page_range, "baseURL": baseURL}
     return render(request, "fesbbook_app/studentList.html", context)
 
 def studentInfo(request, username):
