@@ -4,8 +4,21 @@
   <head>
     <link
       rel="icon"
-      href="{% static 'images/favicon - Copy.png' %}"
+      href="{% static 'images/favicon_dark.png' %}"
       type="image/gif"
+      media="(prefers-color-scheme:light)"
+    />
+    <link
+      rel="icon"
+      href="{% static 'images/favicon_light.png' %}"
+      type="image/gif"
+      media="(prefers-color-scheme:dark)"
+    />
+    <link
+      rel="icon"
+      href="{% static 'images/favicon_dark.png' %}"
+      type="image/gif"
+      media="(prefers-color-scheme:no-preference)"
     />
     <meta charset="UTF-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
@@ -47,6 +60,11 @@
         height: 50px;
         filter: invert(100%);
       }
+      @media (prefers-color-scheme: dark) {
+        #faviconImage {
+          filter: invert(100%);
+        }
+      }
     </style>
     {% block additional_styles %} {% endblock additional_styles %}
   </head>
@@ -55,7 +73,9 @@
       class="navbar fixed-top p-3 navbar-expand-lg navbar-dark bg-dark"
       id="navigation"
     >
-      <a class="navbar-brand" href="/"><img src="{% static 'images/logo.png' %}" id="logoImage"/></a>
+      <a class="navbar-brand" href="/"
+        ><img src="{% static 'images/logo.png' %}" id="logoImage"
+      /></a>
       <button
         class="navbar-toggler"
         type="button"
@@ -98,6 +118,24 @@
     <script>
       document.getElementById("logoutConfirmButton").onclick = () =>
         (location.href = "../logout");
+    </script>
+    <script>
+      $(document).ready(function () {
+        if (!window.matchMedia) return;
+
+        var current = $('head > link[rel="icon"][media]');
+        $.each(current, function (i, icon) {
+          var match = window.matchMedia(icon.media);
+          function swap() {
+            if (match.matches) {
+              current.remove();
+              current = $(icon).appendTo("head");
+            }
+          }
+          match.addListener(swap);
+          swap();
+        });
+      });
     </script>
     {% block script %} {% endblock script %}
   </body>

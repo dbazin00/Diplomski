@@ -208,10 +208,11 @@ Trenutno nemate poruka s korisnikom <b>{{title}}</b>. Pošaljite poruku!
         messageData.sender.username + "</h4><p class='card-text'>" +
         messageData.message_text + "</p></div><div class='card-footer w-100'>"+
         messageData.date_sent + "</div></div><br>" + document.getElementById("messagesList").innerHTML;
-      clean();
     }
-    document.getElementById("noMessages").innerHTML = ""
-
+    if(document.getElementById("noMessages").style.display != "none")
+    {
+      document.getElementById("noMessages").style.display = "none"
+    }
   };
   socket.onopen = function (e) {
     console.log("open", e);
@@ -225,7 +226,10 @@ Trenutno nemate poruka s korisnikom <b>{{title}}</b>. Pošaljite poruku!
       };
       socket.send(JSON.stringify(finalData));
       formData.reset();
-      document.getElementById("noMessages").innerHTML = ""
+      if(document.getElementById("noMessages").style.display != "none")
+      {
+        document.getElementById("noMessages").style.display = "none"
+      }
     };
   };
   socket.onerror = function (e) {

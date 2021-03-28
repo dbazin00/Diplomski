@@ -2,7 +2,7 @@
 
 {% block additional_styles %}
 <style>
-#display_profile_image {
+    .card-header img {
     float: left;
     width: 100px;
     height: 100px;
@@ -51,11 +51,12 @@
 <br>
 Trenutno nemate razgovora u kojim sudjelujete. Povratak na <a href="studentList">listu svih studenata</a>.
 {% endif %}
+    <br>
     {% for conversation in lastMessages %}
     {% if conversation.receiver.username == request.session.loggedInUser %}
     <div class="card flex-row flex-wrap bg-dark" onclick="window.location='conversation/{{conversation.sender.username}}';">
         <div class="card-header border-0">
-            <img src="{{conversation.sender.profile_image}}" alt="Profile image" id="display_profile_image">
+            <img src="{{conversation.sender.profile_image}}" alt="Profile image">
             {% if conversation.sender.isActive %}
             <div class="isActive bg-success"></div>
             {% endif %}

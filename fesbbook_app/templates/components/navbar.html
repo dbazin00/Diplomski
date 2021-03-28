@@ -3,13 +3,13 @@
 <a
   class="nav-item d-lg-flex align-items-center nav-link active"
   href="{{pathItem.path}}"
-  >{{pathItem.text}}
+  ><i class="{{pathItem.icon}}"></i>&nbsp;{{pathItem.text}}
 </a>
 {% else %}
 <a
   class="nav-item d-lg-flex align-items-center nav-link"
   href="{{pathItem.path}}"
-  >{{pathItem.text}}
+  ><i class="{{pathItem.icon}}"></i>&nbsp;{{pathItem.text}}
 </a>
 {% endif %} 
 {% endfor %}
@@ -19,20 +19,27 @@
   class="nav-link btn btn-danger btn-md nav-item d-lg-flex align-items-center"
   onclick="location.href='login'"
 >
+  <i class="fas fa-sign-in-alt"></i>&nbsp;
   Prijava
 </button>
 {% else %}
 <li class="nav-item dropdown">
+  {% if active == "../myProfile" %}
+  <a class="nav-link dropdown-toggle" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" style="color: white;">
+    {{request.session.loggedInUser}}
+  </a>
+  {% else %}
   <a class="nav-link dropdown-toggle" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
     {{request.session.loggedInUser}}
   </a>
+  {% endif %}
   <div class="dropdown-menu dropdown-menu-dark bg-dark" aria-labelledby="navbarDarkDropdownMenuLink">
     {% if active == "../myProfile" %}
-    <a class="dropdown-item" href="../myProfile" style="color: white;">Moj profil</a>
+    <a class="dropdown-item" href="../myProfile" style="color: white;"><i class="fas fa-user"></i>&nbsp;Moj profil</a>
     {% else %}
-    <a class="dropdown-item" href="../myProfile">Moj profil</a>
+    <a class="dropdown-item" href="../myProfile"><i class="fas fa-user"></i>&nbsp;Moj profil</a>
     {% endif %}
-    <a class="dropdown-item" id="login-button" data-toggle="modal" data-target="#logoutModal">Odjava</a>
+    <a class="dropdown-item" id="login-button" data-toggle="modal" data-target="#logoutModal"><i class="fas fa-sign-out-alt"></i>&nbsp;Odjava</a>
   </div>
 </li>
 

@@ -83,7 +83,7 @@
     <input
       class="form-check-input"
       type="checkbox"
-      value="False"
+      value="{{request.GET.study}}"
       id="flexCheckDefault"
       name="study"
     />
@@ -121,7 +121,7 @@ Ne postoji korisnik s traženim podacima. Povratak na
     {% if student.isActive %} 
     Aktivan 
     {% else %}
-    Zadnja aktivnost
+    Zadnja aktivnost: {{student.lastActivity|date:"j. n. Y. G:i"}}
     {% endif %}
   </div>
 </div>
@@ -132,8 +132,18 @@ Ne postoji korisnik s traženim podacima. Povratak na
 {% endblock content %}
 {% block script %}
 <script>
+  window.onload = () => {
+    if (document.getElementById("flexCheckDefault").value == "True")
+    {
+      document.getElementById("flexCheckDefault").checked = true
+    }
+    else
+    {
+      document.getElementById("flexCheckDefault").checked = false
+    }
+  }
   document.getElementById("flexCheckDefault").onclick = () => {
-    document.getElementById("flexCheckDefault").value = "True";
+    document.getElementById("flexCheckDefault").value == "True"? document.getElementById("flexCheckDefault").value = "False": document.getElementById("flexCheckDefault").value = "True";
   };
 </script>
 {% endblock script %}

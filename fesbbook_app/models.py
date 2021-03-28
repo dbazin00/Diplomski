@@ -31,6 +31,7 @@ class Student(models.Model):
     study = models.ForeignKey(Study, on_delete=models.CASCADE, default=None)
     gender = models.CharField(max_length=1, choices=GENDER_CHOICES, default="M")
     isActive = models.BooleanField(default=False)
+    lastActivity = models.DateTimeField(auto_now=True)
 
 class ChatRoomManager(models.Manager):
     def get_or_new(self, loggedInUser, chatFriend):

@@ -2,14 +2,15 @@ from django.shortcuts import render, redirect, reverse
 from django.core.files.storage import FileSystemStorage
 from django.db.models import Q
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
+from django.utils import timezone
 
 from .forms import StudentForm, LoginForm, PasswordForm
 from .models import Student, Study, Message, ChatRoom
 
 # Create your views here.
 
-loggedInNavbar = [{"text": "Početna", "path": "/"}, {"text": "Kolege", "path": "../studentList"}, {"text": "Razgovori", "path": "../conversation"}, {"text": "Kontakt", "path": "../contact"}]
-loggedOutNavbar = [{"text": "Početna", "path": "/"}, {"text": "Kontakt", "path": "contact"}, {"text": "Registracija", "path": "registration"}]
+loggedInNavbar = [{"text": "Početna", "path": "/", "icon":"fas fa-home"}, {"text": "Kolege", "path": "../studentList", "icon":"fas fa-address-book"}, {"text": "Razgovori", "path": "../conversation", "icon":"fas fa-comments"}, {"text": "Kontakt", "path": "../contact", "icon":"far fa-address-card"}]
+loggedOutNavbar = [{"text": "Početna", "path": "/", "icon":"fas fa-home"}, {"text": "Kontakt", "path": "../contact", "icon":"far fa-address-card"}, {"text": "Registracija", "path": "registration", "icon":"fas fa-user-plus"}]
 
 def index(request):
     pathInfo = navbarPathInfo(request)
@@ -78,6 +79,7 @@ def createStudent(request, newStudent):
     if newStudent.is_valid():
         form = newStudent.save(commit=False)
         form.isActive = False
+        form.lastActivity = timezone.now
         
         if profile_image:
             fs = FileSystemStorage(location="media/profile_images")
@@ -103,7 +105,7 @@ def studentList(request):
     if request.GET.get("study"):
         fullQuerry = fullQuerry & Q(study = loggedInUser.study)
             
-    studentList = Student.objects.filter(fullQuerry).exclude(username = loggedInUser.username)
+    studentList = Student.objects.filter(fullQuerry).exclude(username = loggedInUser.username).order_by("-lastActivity").order_by("-isActive")
 
     paginator = Paginator(studentList, 1)
     page = request.GET.get("page")
