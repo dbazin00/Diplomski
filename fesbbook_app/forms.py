@@ -4,7 +4,7 @@ from django.core.validators import validate_email
 import re
 
 INVALID_USERNAMES = ["None", "default"]
-USERNAME_REGEX = r"^[a-zA-Z0-9]+$"
+USERNAME_REGEX = r"^[a-zA-Z0-9_.]+$"
 EMAIL_REGEX = r"^[a-zA-Z0-9]+@fesb.hr$"
 
 class StudentForm(forms.ModelForm):
@@ -44,10 +44,10 @@ class StudentForm(forms.ModelForm):
         password_confirm = self.cleaned_data.get("password_confirm")
 
         if Student.objects.filter(username=username).exists() or username in INVALID_USERNAMES or not re.match(USERNAME_REGEX, username):
-            self.add_error("username", "Neispravno korisničko ime")
+            self.add_error("username", "Neispravno korisničko ime! Dozovljena su samo velika i mala slova, brojke te znakovi _ i .")
             
         if validate_email(email) != None or Student.objects.filter(email=email).exists() or not re.match(EMAIL_REGEX, email):
-            self.add_error("email", "Neispravna e-mail adresa! Adresa mora završavati sa @fesb.hr.")
+            self.add_error("email", "Neispravna e-mail adresa! Adresa mora završavati s @fesb.hr.")
 
         if password != password_confirm:
             self.add_error("password", "Lozinka nije potvrđena")

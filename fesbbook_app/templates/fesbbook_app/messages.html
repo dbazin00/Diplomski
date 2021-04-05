@@ -26,7 +26,8 @@
     border: solid grey;
   }
   #message_button,
-  #send_button {
+  #send_button,
+  #file_button {
     margin-top: auto;
     margin-bottom: auto;
     margin-left: 10px;
@@ -60,15 +61,27 @@
   #receiverImage {
     border: 5px solid #007bff;
   }
+  #fileList {
+    color: white;
+    margin-bottom: 10px;
+    margin-left: 10px;
+  }
+  #messageFile {
+    font-style: italic;
+  }
+  #messageFile:hover {
+    text-decoration: underline;
+    cursor: pointer;
+  }
 </style>
 
 {% endblock additional_styles %} 
 
 {% block content %}
 <input type="hidden" value="{{request.session.loggedInUser}}" id="loggedInUser">
+<br>
 {% if allMessages|length == 0 %}
 <div id="noMessages">
-<br>
 Trenutno nemate poruka s korisnikom <b>{{title}}</b>. Pošaljite poruku!
 </div>
 {% endif %}
@@ -82,6 +95,7 @@ Trenutno nemate poruka s korisnikom <b>{{title}}</b>. Pošaljite poruku!
     <div class="card-block px-2">
       <h4 class="card-title">{{message.sender.username}}</h4>
       <p class="card-text">{{message.message}}</p>
+      <p class="card-text" onclick="openFile('../{{message.message_file}}')" id="messageFile"><i class="{{message.message_file_icon}}"></i>&nbsp;&nbsp;{{message.message_file_name}}</p>
     </div>
     <div class="card-footer w-100">
       {{message.date_sent|date:"j. n. Y. G:i"}}
@@ -99,6 +113,7 @@ Trenutno nemate poruka s korisnikom <b>{{title}}</b>. Pošaljite poruku!
     <div class="card-block px-2">
       <h4 class="card-title">{{message.sender.username}}</h4>
       <p class="card-text">{{message.message}}</p>
+      <p class="card-text" onclick="openFile('../{{message.message_file}}')" id="messageFile"><i class="{{message.message_file_icon}}"></i>&nbsp;&nbsp;{{message.message_file_name}}</p>
     </div>
     <div class="card-footer w-100">
       {{message.date_sent|date:"j. n. Y. G:i"}}<br/>
@@ -111,6 +126,8 @@ Trenutno nemate poruka s korisnikom <b>{{title}}</b>. Pošaljite poruku!
 {% endblock content %}
 
 {% block footer %}
+
+<div id="fileList"></div>
 <form
   id="form"
   action=""
@@ -122,6 +139,7 @@ Trenutno nemate poruka s korisnikom <b>{{title}}</b>. Pošaljite poruku!
   onreset="document.getElementById('send_button').disabled=true"
 >
   {% csrf_token %}
+
   <div id="message_form">
     <textarea
       class="bg-dark text-white"
@@ -135,13 +153,18 @@ Trenutno nemate poruka s korisnikom <b>{{title}}</b>. Pošaljite poruku!
       maxlength="500"
     ></textarea>
     <input type="submit" class="btn btn-success btn-lg far fa-paper-plane" value="&#xf1d8" id="send_button" title="Pošalji poruku" disabled>
-    <input
+    <!-- <input
       type="button"
       class="btn btn-secondary btn-lg fas fa-paperclip"
       value="&#xf0c6"
       title="Priloži dokument"
       id="message_button"
-    >
+    > -->
+    <div class="upload">
+    <input type="file" id="fileUpload" name="fileUpload" hidden/>
+    <label for="fileUpload" class="btn btn-secondary btn-lg fas fa-paperclip" title="Priloži dokument" id="file_button"style="margin-top: 15.4px; padding-top:15px;">
+    </label>
+    </div>
     <input
       type="reset"
       class="btn btn-danger btn-lg fas fa-trash-alt"
@@ -209,7 +232,7 @@ Trenutno nemate poruka s korisnikom <b>{{title}}</b>. Pošaljite poruku!
         messageData.message_text + "</p></div><div class='card-footer w-100'>"+
         messageData.date_sent + "</div></div><br>" + document.getElementById("messagesList").innerHTML;
     }
-    if(document.getElementById("noMessages").style.display != "none")
+    if(document.getElementById("noMessages") != null)
     {
       document.getElementById("noMessages").style.display = "none"
     }
@@ -220,17 +243,43 @@ Trenutno nemate poruka s korisnikom <b>{{title}}</b>. Pošaljite poruku!
     formData.onsubmit = (event) => {
       event.preventDefault();
       var msgText = document.getElementById("message_text").value;
-
-      var finalData = {
-        messageText: msgText,
-      };
-      socket.send(JSON.stringify(finalData));
-      formData.reset();
-      if(document.getElementById("noMessages").style.display != "none")
+      
+      if(document.getElementById("fileUpload").value !== "")
       {
-        document.getElementById("noMessages").style.display = "none"
+        var inputField = document.getElementById("fileUpload").files[0]
+        var fileData = new Blob([inputField])
+        var reader = new FileReader();
+        reader.readAsArrayBuffer(fileData);
+        reader.onload = function(){
+        var arrayBuffer = reader.result
+        var bytes = new Uint8Array(arrayBuffer);
+
+          var finalData = {
+            messageText: msgText,
+            inputFile: bytes,
+            fileName: inputField.name,
+            fileIcon: getFileIcon(inputField.name) 
+          };
+          socket.send(JSON.stringify(finalData));
+          formData.reset();
+          if(document.getElementById("noMessages"))
+          {
+            document.getElementById("noMessages").style.display = "none"
+          }
+        };
       }
-    };
+      else {
+        var finalData = {
+          messageText: msgText
+        };
+        socket.send(JSON.stringify(finalData));
+        formData.reset();
+        if(document.getElementById("noMessages"))
+        {
+          document.getElementById("noMessages").style.display = "none"
+        }
+      }
+    }
   };
   socket.onerror = function (e) {
     console.log("error", e);
@@ -238,5 +287,75 @@ Trenutno nemate poruka s korisnikom <b>{{title}}</b>. Pošaljite poruku!
   socket.onclose = function (e) {
     console.log("close", e);
   };
+
+  //file upload
+  window.onload=()=>{
+    document.getElementById("fileUpload").addEventListener("change", () => {
+
+      if(document.getElementById("fileUpload").files[0])
+      {
+        inputFile = document.getElementById("fileUpload").files[0].name
+        
+        document.getElementById("fileList").innerHTML = "<i class='" + getFileIcon(inputFile) + "'><i/>&nbsp;&nbsp;" + inputFile
+      }
+      else
+      {
+        document.getElementById("fileList").innerHTML = ""
+      }
+    })
+
+    document.getElementById("form").addEventListener("reset", () =>{
+      document.getElementById("fileList").innerHTML = ""
+    })
+  
+  }
+
+  function getFileIcon(fileName){
+    var fileExtension = fileName.split(".").pop()
+    if(fileExtension == "pdf")
+    {
+      return "fas fa-file-pdf"
+    }
+    else if(fileExtension == "doc" || fileExtension == "dot" || fileExtension == "wbk" || fileExtension == "docx" || fileExtension == "docm" || fileExtension == "dotx" || fileExtension == "dotm" || fileExtension == "docb")
+    {
+      return "fas fa-file-word"
+    }
+    else if(fileExtension == "xls" || fileExtension == "xlt" || fileExtension == "xlm" || fileExtension == "xlsx" || fileExtension == "xlsm" || fileExtension == "xltx" || fileExtension == "xltm" || fileExtension == "xlsb" || fileExtension == "xla" || fileExtension == "xlam" || fileExtension == "xll" || fileExtension == "xlw")
+    {
+      return "fas fa-file-excel"
+    }
+    else if(fileExtension == "ppt" || fileExtension == "pot" || fileExtension == "pps" || fileExtension == "pptx" || fileExtension == "pptm" || fileExtension == "potx" || fileExtension == "potm" || fileExtension == "ppam" || fileExtension == "ppsx" || fileExtension == "ppsm" || fileExtension == "sldx" || fileExtension == "sldm")
+    {
+      return "fas fa-file-powerpoint"
+    }
+    else if(fileExtension == "jpg" || fileExtension == "jpeg" || fileExtension == "png" || fileExtension == "gif" || fileExtension == "tiff")
+    {
+      return "fas fa-file-image"
+    }
+    else if(fileExtension == "csv")
+    {
+      return "fas fa-file-csv"
+    }
+    else if(fileExtension == "zip" || fileExtension == "zipx" || fileExtension == "rar")
+    {
+      return "fas fa-file-archive"
+    }
+    else if(fileExtension == "m4a" || fileExtension == "flac" || fileExtension == "mp3" || fileExtension == "wav" || fileExtension == "wma" || fileExtension == "aac")
+    {
+      return "fas fa-file-audio"
+    }
+    else if(fileExtension == "mp4" || fileExtension == "mov" || fileExtension == "wmv" || fileExtension == "flv" || fileExtension == "avi" || fileExtension == "mkv")
+    {
+      return "fas fa-file-video"
+    }
+    else 
+    {
+      return "fas fa-file"
+    }
+  }
+
+  function openFile(fullFilePath) {
+    window.open(fullFilePath, "_blank");
+  }
 </script>
 {% endblock script %}

@@ -105,7 +105,7 @@ def studentList(request):
     if request.GET.get("study"):
         fullQuerry = fullQuerry & Q(study = loggedInUser.study)
             
-    studentList = Student.objects.filter(fullQuerry).exclude(username = loggedInUser.username).order_by("-lastActivity").order_by("-isActive")
+    studentList = Student.objects.filter(fullQuerry).exclude(username = loggedInUser.username)
 
     paginator = Paginator(studentList, 1)
     page = request.GET.get("page")
@@ -122,8 +122,7 @@ def studentList(request):
     start_index = index - 5 if index >= 5 else 0
     end_index = index + 5 if index <= max_index - 5 else max_index
     page_range = paginator.page_range[start_index:end_index]
-
-    print(request.get_full_path())
+    
     baseURL = request.get_full_path()
 
     if "page" in request.get_full_path():
@@ -209,8 +208,10 @@ def conversations(request):
 
     for currentChatRoom in myChatRooms:
         lastMessage = Message.objects.filter(chat_room=currentChatRoom).last()
-        lastMessage.unreadMessages = Message.objects.filter(Q(chat_room=currentChatRoom) & Q(receiver=loggedInUser)).count()
-        lastMessages.append(lastMessage)
+
+        if lastMessage != None:
+            lastMessage.unreadMessages = Message.objects.filter(Q(chat_room=currentChatRoom) & Q(receiver=loggedInUser)).count()
+            lastMessages.append(lastMessage)
 
     lastMessages.sort(key=lambda x: x.date_sent, reverse=True)
 

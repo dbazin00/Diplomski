@@ -33,6 +33,9 @@ class Student(models.Model):
     isActive = models.BooleanField(default=False)
     lastActivity = models.DateTimeField(auto_now=True)
 
+    class Meta:
+       ordering = ["-isActive", "-lastActivity"]
+
 class ChatRoomManager(models.Manager):
     def get_or_new(self, loggedInUser, chatFriend):
         if loggedInUser == chatFriend:
@@ -73,6 +76,9 @@ class Message(models.Model):
     date_sent = models.DateTimeField(default=timezone.now)
     is_read = models.BooleanField(default=False)
     chat_room = models.ForeignKey(ChatRoom, on_delete=models.CASCADE, related_name="chat_room", default=None)
+    message_file = models.FileField(blank=True, null=True, max_length=500)
+    message_file_name = models.CharField(max_length=500, blank=True, null=True)
+    message_file_icon = models.CharField(max_length=22, blank=True, null=True)
 
 
         
