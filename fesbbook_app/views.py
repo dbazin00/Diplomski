@@ -15,11 +15,19 @@ loggedOutNavbar = [{"text": "Početna", "path": "/", "icon":"fas fa-home"}, {"te
 def index(request):
     pathInfo = navbarPathInfo(request)
     context = {"pathinfo" : pathInfo, "active": "/"}
+    
+    if(request.session.get("loggedInUser")):
+        context["profile_image"] = getProfileImage(request)
+
     return render(request, "fesbbook_app/index.html", context)
 
 def contact(request):
     pathInfo = navbarPathInfo(request)
     context = {"pathinfo": pathInfo, "active": "../contact"}
+
+    if(request.session.get("loggedInUser")):
+        context["profile_image"] = getProfileImage(request)
+    
     return render(request, "fesbbook_app/contact.html", context)
 
 def login(request):
@@ -133,7 +141,7 @@ def studentList(request):
         baseURL += "&"
     
     pathInfo = navbarPathInfo(request)
-    context = {"pathinfo" : pathInfo, "active": "../studentList", "studentList": studentList, "items": items, "page_range": page_range, "baseURL": baseURL}
+    context = {"pathinfo" : pathInfo, "active": "../studentList", "studentList": studentList, "items": items, "page_range": page_range, "baseURL": baseURL, "profile_image": getProfileImage(request)}
     return render(request, "fesbbook_app/studentList.html", context)
 
 def studentInfo(request, username):
@@ -145,7 +153,7 @@ def studentInfo(request, username):
 
     studentInfo = Student.objects.get(username = username)
     pathInfo = navbarPathInfo(request)
-    context = {"pathinfo" : pathInfo, "active": "../studentList", "studentInfo": studentInfo}
+    context = {"pathinfo" : pathInfo, "active": "../studentList", "studentInfo": studentInfo, "profile_image": getProfileImage(request)}
     return render(request, "fesbbook_app/studentInfo.html", context)    
 
 def myProfile(request):
@@ -154,7 +162,7 @@ def myProfile(request):
 
     myInfo = Student.objects.get(username = request.session.get("loggedInUser"))
     pathInfo = navbarPathInfo(request)
-    context = {"pathinfo" : pathInfo, "active": "../myProfile", "studentInfo": myInfo}
+    context = {"pathinfo" : pathInfo, "active": "../myProfile", "studentInfo": myInfo, "profile_image": getProfileImage(request)}
     return render(request, "fesbbook_app/myProfile.html", context)
 
 def editProfile(request):
@@ -193,7 +201,7 @@ def editProfile(request):
         myInfo = Student.objects.get(username = request.session.get("loggedInUser"))
         myForm = StudentForm(instance = myInfo)
         pathInfo = navbarPathInfo(request)
-        context = {"pathinfo" : pathInfo, "active": "../myProfile", "myInfo": myInfo, "myForm": myForm}
+        context = {"pathinfo" : pathInfo, "active": "../myProfile", "myInfo": myInfo, "myForm": myForm, "profile_image": getProfileImage(request)}
         return render(request, "fesbbook_app/editProfile.html", context)
 
 def conversations(request):
@@ -217,7 +225,7 @@ def conversations(request):
 
     pathInfo = navbarPathInfo(request)
 
-    context = {"pathinfo" : pathInfo, "active": "../conversation", "lastMessages": lastMessages}
+    context = {"pathinfo" : pathInfo, "active": "../conversation", "lastMessages": lastMessages, "profile_image": getProfileImage(request)}
     return render(request, "fesbbook_app/conversations.html", context)
 
 def messages(request, username):
@@ -242,7 +250,7 @@ def messages(request, username):
     pathInfo = navbarPathInfo(request)
     allMessages = Message.objects.filter((Q(sender=loggedInUser) | Q(receiver=loggedInUser)) & (Q(sender=chatFriend) | Q(receiver=chatFriend)))
     allMessages = allMessages.order_by("date_sent").reverse()
-    context = {"pathinfo" : pathInfo, "active": "../conversation", "title": username, "allMessages": allMessages}
+    context = {"pathinfo" : pathInfo, "active": "../conversation", "title": username, "allMessages": allMessages, "profile_image": getProfileImage(request)}
     return render(request, "fesbbook_app/messages.html", context)
 
 def newPassword(request):
@@ -260,14 +268,14 @@ def newPassword(request):
 
         else:
             pathInfo = navbarPathInfo(request)
-            context = {"pathinfo" : pathInfo, "active": "../myProfile", "password": new_password}
+            context = {"pathinfo" : pathInfo, "active": "../myProfile", "password": new_password, "profile_image": getProfileImage(request)}
             return render(request, "fesbbook_app/newPassword.html", context)
 
     else:
         password = PasswordForm()
         password.data = {**password.data.dict(), 'loggedInUser': request.session.get("loggedInUser")}
         pathInfo = navbarPathInfo(request)
-        context = {"pathinfo" : pathInfo, "active": "../myProfile", "password": password}
+        context = {"pathinfo" : pathInfo, "active": "../myProfile", "password": password, "profile_image": getProfileImage(request)}
         return render(request, "fesbbook_app/newPassword.html", context)
 
 def navbarPathInfo(request):
@@ -275,6 +283,9 @@ def navbarPathInfo(request):
         return loggedOutNavbar
     else:
         return loggedInNavbar
+
+def getProfileImage(request):
+    return Student.objects.get(username = request.session.get("loggedInUser")).profile_image.url
 
 def error_400_view(request, exception):
     pathInfo = navbarPathInfo(request)

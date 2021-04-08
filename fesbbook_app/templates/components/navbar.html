@@ -26,11 +26,11 @@
 <li class="nav-item dropdown">
   {% if active == "../myProfile" %}
   <a class="nav-link dropdown-toggle" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" style="color: white;">
-    {{request.session.loggedInUser}}
+    <img src="{{profile_image}}" id="navbarProfileImage">{{request.session.loggedInUser}}
   </a>
   {% else %}
   <a class="nav-link dropdown-toggle" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-    {{request.session.loggedInUser}}
+    <img src="{{profile_image}}" id="navbarProfileImage">{{request.session.loggedInUser}}
   </a>
   {% endif %}
   <div class="dropdown-menu dropdown-menu-dark bg-dark" aria-labelledby="navbarDarkDropdownMenuLink">
