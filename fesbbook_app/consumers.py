@@ -61,8 +61,9 @@ class ChatConsumer(AsyncConsumer):
                     "message_text": message_text,
                     "date_sent": datetime.now().strftime("%#d. %#m. %Y. %#H:%M"),
                     "sender": loggedInUser,
-                    "file_url": fs.url(nf),
-
+                    "file_url": full_file_path,
+                    "file_name": file_name,
+                    "file_icon": file_icon
                 }
                 await self.create_new_message(message_text, full_file_path, file_name, file_icon)
             else:

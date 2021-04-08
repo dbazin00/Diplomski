@@ -73,6 +73,12 @@
     text-decoration: underline;
     cursor: pointer;
   }
+  #removeFileButton:hover {
+    color: red;
+  }
+  #removeFileButton {
+    margin-left: 20px;
+  }
 </style>
 
 {% endblock additional_styles %} 
@@ -95,7 +101,9 @@ Trenutno nemate poruka s korisnikom <b>{{title}}</b>. Pošaljite poruku!
     <div class="card-block px-2">
       <h4 class="card-title">{{message.sender.username}}</h4>
       <p class="card-text">{{message.message}}</p>
+      {% if message.message_file %}
       <p class="card-text" onclick="openFile('../{{message.message_file}}')" id="messageFile"><i class="{{message.message_file_icon}}"></i>&nbsp;&nbsp;{{message.message_file_name}}</p>
+      {% endif %}
     </div>
     <div class="card-footer w-100">
       {{message.date_sent|date:"j. n. Y. G:i"}}
@@ -113,7 +121,9 @@ Trenutno nemate poruka s korisnikom <b>{{title}}</b>. Pošaljite poruku!
     <div class="card-block px-2">
       <h4 class="card-title">{{message.sender.username}}</h4>
       <p class="card-text">{{message.message}}</p>
+      {% if message.message_file %}
       <p class="card-text" onclick="openFile('../{{message.message_file}}')" id="messageFile"><i class="{{message.message_file_icon}}"></i>&nbsp;&nbsp;{{message.message_file_name}}</p>
+      {% endif %}
     </div>
     <div class="card-footer w-100">
       {{message.date_sent|date:"j. n. Y. G:i"}}<br/>
@@ -161,9 +171,9 @@ Trenutno nemate poruka s korisnikom <b>{{title}}</b>. Pošaljite poruku!
       id="message_button"
     > -->
     <div class="upload">
-    <input type="file" id="fileUpload" name="fileUpload" hidden/>
-    <label for="fileUpload" class="btn btn-secondary btn-lg fas fa-paperclip" title="Priloži dokument" id="file_button"style="margin-top: 15.4px; padding-top:15px;">
-    </label>
+      <input type="file" id="fileUpload" name="fileUpload" hidden/>
+      <label for="fileUpload" class="btn btn-secondary btn-lg fas fa-paperclip" title="Priloži dokument" id="file_button" style="margin-top: 15.4px; padding-top:15px;">
+      </label>
     </div>
     <input
       type="reset"
@@ -210,11 +220,24 @@ Trenutno nemate poruka s korisnikom <b>{{title}}</b>. Pošaljite poruku!
     messageData = JSON.parse(e.data);
     if (messageData.sender.username == document.getElementById("loggedInUser").value)
     {
-      document.getElementById("messagesList").innerHTML = "<div class='card flex-row flex-wrap bg-primary'><div class='card-header border-0'> <img src='../"+
+      var innerHTMLData = "<div class='card flex-row flex-wrap bg-primary'><div class='card-header border-0'> <img src='../"+
         messageData.sender.profile_image + "' alt='Profile image' id='senderImage'></div><div class='card-block px-2'><h4 class='card-title'>" +
         messageData.sender.username + "</h4><p class='card-text'>" +
-        messageData.message_text + "</p></div><div class='card-footer w-100'>"+
+        messageData.message_text + "</p>"
+        
+      if(messageData.file_url)
+      {
+        var fileInnerHTML = document.createElement("p")
+        fileInnerHTML.className = "card-text"
+        fileInnerHTML.setAttribute("onclick", "openFile('../" + messageData.file_url +"')");
+        fileInnerHTML.id = "messageFile"
+        fileInnerHTML.innerHTML = "<i class='" + messageData.file_icon + "'></i>&nbsp;&nbsp;" + messageData.file_name
+        innerHTMLData += fileInnerHTML.outerHTML
+      }
+
+      innerHTMLData += "</div><div class='card-footer w-100'>"+
         messageData.date_sent + "</div></div><br>" + document.getElementById("messagesList").innerHTML;
+      document.getElementById("messagesList").innerHTML = innerHTMLData
       clean();
     }
     else
@@ -226,11 +249,25 @@ Trenutno nemate poruka s korisnikom <b>{{title}}</b>. Pošaljite poruku!
       {
         innerData += "<div class='isActive bg-success'></div>"
       }
-
-      document.getElementById("messagesList").innerHTML = innerData + "</div><div class='card-block px-2'><h4 class='card-title'>" +
+      console.log(messageData.file_url)
+      innerData = innerData + "</div><div class='card-block px-2'><h4 class='card-title'>" +
         messageData.sender.username + "</h4><p class='card-text'>" +
-        messageData.message_text + "</p></div><div class='card-footer w-100'>"+
+        messageData.message_text + "</p>" 
+
+      if(messageData.file_url)
+      {
+        var fileInnerHTML = document.createElement("p")
+        fileInnerHTML.className = "card-text"
+        fileInnerHTML.setAttribute("onclick", "openFile('../" + messageData.file_url +"')");
+        fileInnerHTML.id = "messageFile"
+        fileInnerHTML.innerHTML = "<i class='" + messageData.file_icon + "'></i>&nbsp;&nbsp;" + messageData.file_name
+        innerData += fileInnerHTML.outerHTML
+      }
+
+      innerData += "</div><div class='card-footer w-100'>"+
         messageData.date_sent + "</div></div><br>" + document.getElementById("messagesList").innerHTML;
+
+      document.getElementById("messagesList").innerHTML = innerData
     }
     if(document.getElementById("noMessages") != null)
     {
@@ -296,7 +333,12 @@ Trenutno nemate poruka s korisnikom <b>{{title}}</b>. Pošaljite poruku!
       {
         inputFile = document.getElementById("fileUpload").files[0].name
         
-        document.getElementById("fileList").innerHTML = "<i class='" + getFileIcon(inputFile) + "'><i/>&nbsp;&nbsp;" + inputFile
+        document.getElementById("fileList").innerHTML = "<i class='" + getFileIcon(inputFile) + "'><i/>&nbsp;&nbsp;" + inputFile +"<i class='fas fa-times-circle' title='Ukloni datoteku' id='removeFileButton'></i>"
+
+        document.getElementById("removeFileButton").addEventListener("click", () => {
+          document.getElementById("fileList").innerHTML = ""
+          document.getElementById("fileUpload").value = ""
+        })
       }
       else
       {
@@ -307,7 +349,7 @@ Trenutno nemate poruka s korisnikom <b>{{title}}</b>. Pošaljite poruku!
     document.getElementById("form").addEventListener("reset", () =>{
       document.getElementById("fileList").innerHTML = ""
     })
-  
+
   }
 
   function getFileIcon(fileName){
@@ -357,5 +399,7 @@ Trenutno nemate poruka s korisnikom <b>{{title}}</b>. Pošaljite poruku!
   function openFile(fullFilePath) {
     window.open(fullFilePath, "_blank");
   }
+
+  
 </script>
 {% endblock script %}
