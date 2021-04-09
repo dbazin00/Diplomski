@@ -3,6 +3,7 @@ from django.core.files.storage import FileSystemStorage
 from django.db.models import Q
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.utils import timezone
+import datetime
 
 from .forms import StudentForm, LoginForm, PasswordForm
 from .models import Student, Study, Message, ChatRoom
@@ -108,14 +109,17 @@ def studentList(request):
 
     fullQuerry = Q()
 
-    if request.GET.get("username") != None:
-        fullQuerry = fullQuerry & Q(username__contains=request.GET.get("username"))
-    if request.GET.get("study"):
-        fullQuerry = fullQuerry & Q(study = loggedInUser.study)
+    if request.method == "GET":
+        if request.GET.get("username", False):
+            fullQuerry = fullQuerry & Q(username__contains=request.GET.get("username"))
+        if request.GET.get("study"):
+            fullQuerry = fullQuerry & Q(study = loggedInUser.study)
+        if request.GET.get("year"):
+            fullQuerry = fullQuerry & Q(year_of_enrollment = request.GET.get("year"))
             
     studentList = Student.objects.filter(fullQuerry).exclude(username = loggedInUser.username)
 
-    paginator = Paginator(studentList, 1)
+    paginator = Paginator(studentList, 10)
     page = request.GET.get("page")
 
     try:
@@ -141,7 +145,7 @@ def studentList(request):
         baseURL += "&"
     
     pathInfo = navbarPathInfo(request)
-    context = {"pathinfo" : pathInfo, "active": "../studentList", "studentList": studentList, "items": items, "page_range": page_range, "baseURL": baseURL, "profile_image": getProfileImage(request)}
+    context = {"pathinfo" : pathInfo, "active": "../studentList", "studentList": studentList, "items": items, "page_range": page_range, "baseURL": baseURL, "profile_image": getProfileImage(request), "range": range(2010, (datetime.datetime.now().year))}
     return render(request, "fesbbook_app/studentList.html", context)
 
 def studentInfo(request, username):

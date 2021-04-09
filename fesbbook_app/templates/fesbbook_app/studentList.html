@@ -1,4 +1,4 @@
-{% extends "fesbbook_app/base.html" %}
+{% extends "fesbbook_app/base.html" %} 
 
 {% block additional_styles %}
 <style>
@@ -56,48 +56,58 @@
     border-radius: 50%;
   }
 </style>
-{% endblock additional_styles %} 
+{% endblock additional_styles %}
 
 {% block title %}Kolege{% endblock title %}
 
 {% block content %}
 <br />
-<form class="form-inline my-2 my-lg-0" method="GET">
+<form class="form my-2 my-lg-0" id="searchForm" method="GET" onkeydown="return event.key != 'Enter';">
   <div class="input-group">
     <div class="form-outline">
       <input
         type="search"
-        id="form1"
+        id="username"
         class="form-control"
-        value="{{request.GET.username}}"
         placeholder="Korisničko ime..."
         name="username"
         autocomplete="off"
       />
     </div>
-    <button type="submit" class="btn btn-primary">
-      <i class="fas fa-search"></i>
-    </button>
   </div>
-  <div class="form-check m-4">
+  <div class="form-check mt-4 mb-4">
     <input
       class="form-check-input"
       type="checkbox"
-      value="{{request.GET.study}}"
-      id="flexCheckDefault"
+      id="myStudy"
       name="study"
     />
-    <label class="form-check-label" for="flexCheckDefault">
+  </div>
+  <div class="form-check mt-4 mb-4">
+    <label class="form-check-label" for="myStudy">
       Prikaži samo moj smjer
     </label>
-  </div>
+  </div>{{reuest.GET.get.year}}
+  <select class="form-select mt-2 mb-4" id="year" name="year">
+    <option value="">Odaberite godinu upisa</option>
+    {% for y in range %}
+        <option value="{{ y }}">{{ y }}</option>
+    {% endfor %}
+  </select>
+  <br>
+  <button type="submit" class="btn btn-primary mt-2 mb-2">
+    <i class="fas fa-search"></i> Primijeni filtere
+  </button>
+  <br>
+  <button type="button" class="btn btn-danger mt-2 mb-4" onclick="location.href='../studentList'">
+    <i class="fas fa-times"></i> Poništi filtere
+  </button>
 </form>
-{% if items|length == 0 %} 
+{% if items|length == 0 %}
 Ne postoji korisnik s traženim podacima. Povratak na
 <a href="studentList">listu svih studenata</a>. 
 {% endif %} 
 {% include "components/pagination.html" %}
-
 {% for student in items %}
 <div
   class="card flex-row flex-wrap bg-dark"
@@ -118,32 +128,43 @@ Ne postoji korisnik s traženim podacima. Povratak na
     <p class="card-text">{{student.study}}</p>
   </div>
   <div class="card-footer w-100">
-    {% if student.isActive %} 
-    Aktivan 
-    {% else %}
-    Zadnja aktivnost: {{student.lastActivity|date:"j. n. Y. G:i"}}
-    {% endif %}
+    {% if student.isActive %} Aktivan {% else %} Zadnja aktivnost:
+    {{student.lastActivity|date:"j. n. Y. G:i"}} {% endif %}
   </div>
 </div>
 <br />
-{% endfor %}
+{% endfor %} 
 {% include "components/pagination.html" %} 
-
 {% endblock content %}
+
 {% block script %}
 <script>
   window.onload = () => {
-    if (document.getElementById("flexCheckDefault").value == "True")
-    {
-      document.getElementById("flexCheckDefault").checked = true
+    function getUrlVars() {
+      var vars = [],
+        hash;
+      var hashes = window.location.href
+        .slice(window.location.href.indexOf("?") + 1)
+        .split("&");
+
+      for (var i = 0; i < hashes.length; i++) {
+        hash = hashes[i].split("=");
+        hash[1] = unescape(hash[1]);
+        vars.push(hash[0]);
+        vars[hash[0]] = hash[1];
+      }
+
+      return vars;
     }
-    else
+    document.getElementById("myStudy").checked = getUrlVars()["study"];
+    if (getUrlVars()["username"])
     {
-      document.getElementById("flexCheckDefault").checked = false
+      document.getElementById("username").value = getUrlVars()["username"];
     }
-  }
-  document.getElementById("flexCheckDefault").onclick = () => {
-    document.getElementById("flexCheckDefault").value == "True"? document.getElementById("flexCheckDefault").value = "False": document.getElementById("flexCheckDefault").value = "True";
+    if (getUrlVars()["year"])
+    {
+      document.getElementById("year").value = getUrlVars()["year"];
+    }
   };
 </script>
 {% endblock script %}
