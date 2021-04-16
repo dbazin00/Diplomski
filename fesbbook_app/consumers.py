@@ -7,6 +7,8 @@ from django.utils import timezone
 from datetime import datetime
 from django.core.files.base import ContentFile
 from django.core.files.storage import FileSystemStorage
+from django.db.models import Q
+from django.core import serializers
 
 from .models import Message, ChatRoom, Student
 
@@ -90,6 +92,7 @@ class ChatConsumer(AsyncConsumer):
     
     async def websocket_disconnect(self, event):
         print("disconnected", event)
+        await self.read_messages()
         # await self.send({
         #     "type": "websocket.close"
         # })
@@ -114,10 +117,62 @@ class ChatConsumer(AsyncConsumer):
         loggedInUser = Student.objects.get(username=self.loggedInUser)
         return {"username": loggedInUser.username, "profile_image": loggedInUser.profile_image.name, "isActive": loggedInUser.isActive}
 
+    @database_sync_to_async
+    def read_messages(self):
+        loggedInUser = Student.objects.get(username=self.loggedInUser)
+        chatFriend = Student.objects.get(username=self.chatFriend)
+        myUnreadMessages = Message.objects.filter(Q(sender=chatFriend) & Q(receiver=loggedInUser) & Q(is_read=False))
+    
+        for message in myUnreadMessages:
+            message.is_read = True
+            message.save()
+
 class ConversationConsumer(AsyncConsumer):
     async def websocket_connect(self, event):
         print("connected", event)
+        await self.send({
+            "type": "websocket.accept"
+        })
+        await self.send({
+            "type": "websocket.send",
+            "text": json.dumps(await self.get_my_conversations())
+        })
+        await asyncio.sleep(15)
+        await self.send({
+            "type": "websocket.close"
+        })
+
     async def websocket_receive(self, event):
         print("receive", event)
     async def websocket_disconnect(self, event):
         print("disconnected", event)
+
+    @database_sync_to_async
+    def get_my_conversations(self):
+        loggedInUser = Student.objects.get(username = self.scope["session"]["loggedInUser"])
+
+        myChatRooms = ChatRoom.objects.filter(Q(first_student = loggedInUser) | Q(second_student = loggedInUser)).all()
+
+        lastMessages = []
+
+        for currentChatRoom in myChatRooms:
+            lastMessage = Message.objects.filter(chat_room=currentChatRoom).last()
+
+            if lastMessage != None:
+                lastMessage.unreadMessages = Message.objects.filter(Q(chat_room=currentChatRoom) & Q(receiver=loggedInUser)).count()
+                finalData = { "messageText": lastMessage.message,
+                                "sender": lastMessage.sender.username, 
+                                "receiver": lastMessage.receiver.username, 
+                                "sender_image": lastMessage.sender.profile_image.url, 
+                                "receiver_image": lastMessage.receiver.profile_image.url, 
+                                "sender_activity": lastMessage.sender.isActive, 
+                                "receiver_activity": lastMessage.receiver.isActive, 
+                                "date_sent": timezone.localtime(lastMessage.date_sent).strftime("%d. %#m. %Y. %#H:%M"),
+                                "is_read": lastMessage.is_read,
+                                "unreadMessages": lastMessage.unreadMessages,
+                                "messageFile": lastMessage.message_file_name,
+                                "fileIcon": lastMessage.message_file_icon }
+                lastMessages.append(finalData)
+                
+        lastMessages = sorted(lastMessages, key=lambda x: x["date_sent"], reverse=True)
+        return lastMessages

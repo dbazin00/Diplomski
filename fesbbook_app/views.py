@@ -243,19 +243,21 @@ def messages(request, username):
     loggedInUser = Student.objects.get(username=request.session.get("loggedInUser"))
     chatFriend = Student.objects.get(username=username)
 
-    # if request.method == "POST":
-    #     newMessage = Message()
-    #     newMessage.message = request.POST.get("message_text")
-    #     newMessage.sender = loggedInUser
-    #     newMessage.receiver = chatFriend
-    #     newMessage.save()
-    #     return redirect("messages", username=username)
+    readMessages(request, loggedInUser, chatFriend)
 
     pathInfo = navbarPathInfo(request)
     allMessages = Message.objects.filter((Q(sender=loggedInUser) | Q(receiver=loggedInUser)) & (Q(sender=chatFriend) | Q(receiver=chatFriend)))
     allMessages = allMessages.order_by("date_sent").reverse()
     context = {"pathinfo" : pathInfo, "active": "../conversation", "title": username, "allMessages": allMessages, "profile_image": getProfileImage(request)}
     return render(request, "fesbbook_app/messages.html", context)
+
+def readMessages(request, loggedInUser, chatFriend):
+    myUnreadMessages = Message.objects.filter(Q(sender=chatFriend) & Q(receiver=loggedInUser) & Q(is_read=False))
+    
+    for message in myUnreadMessages:
+        message.is_read = True
+        message.save()
+
 
 def newPassword(request):
     if request.session.get("loggedInUser") == None:
