@@ -11,6 +11,7 @@ from django.db.models import Q
 from django.core import serializers
 
 from .models import Message, ChatRoom, Student
+from fesbbook_app.chatbot import chatbot as chatbot
 
 class ChatConsumer(AsyncConsumer):
     async def websocket_connect(self, event):
@@ -176,3 +177,46 @@ class ConversationConsumer(AsyncConsumer):
                 
         lastMessages = sorted(lastMessages, key=lambda x: x["date_sent"], reverse=True)
         return lastMessages
+
+class ChatbotConsumer(AsyncConsumer):
+    async def websocket_connect(self, event):
+        print("connected", event)
+        await self.send({
+            "type": "websocket.accept"
+        })
+    async def websocket_receive(self, event):
+        print("receive", event)
+        message_input = event.get("text", None)
+
+        if message_input is not None:
+            loaded_dict_data = json.loads(message_input)
+            message_text = loaded_dict_data.get("messageText")
+            loggedInUser = await self.get_logged_in_user()
+            await self.send({
+                "type": "websocket.send",
+                "text": json.dumps({
+                    "message_text": message_text,
+                    "date_sent": datetime.now().strftime("%#d. %#m. %Y. %#H:%M"),
+                    "sender": loggedInUser,
+                })
+            })
+            await asyncio.sleep(1)
+            await self.send({
+                "type": "websocket.send",
+                "text": json.dumps({
+                    "message_text": chatbot(message_text),
+                    "date_sent": datetime.now().strftime("%#d. %#m. %Y. %#H:%M"),
+                    "sender": self.get_chatbot_info(),
+                })
+            })
+
+    async def websocket_disconnect(self, event):
+        print("disconnected", event)
+
+    def get_chatbot_info(self):
+        return {"username": "FESBbot", "profile_image": "../static/images/chatbot_image.png"}
+
+    @database_sync_to_async
+    def get_logged_in_user(self):
+        loggedInUser = Student.objects.get(username=self.scope["session"]["loggedInUser"])
+        return {"username": loggedInUser.username, "profile_image": loggedInUser.profile_image.name }

@@ -284,6 +284,14 @@ def newPassword(request):
         context = {"pathinfo" : pathInfo, "active": "../myProfile", "password": password, "profile_image": getProfileImage(request)}
         return render(request, "fesbbook_app/newPassword.html", context)
 
+def chatbot(request):
+    if request.session.get("loggedInUser") == None:
+        return redirect("/")
+    
+    pathInfo = navbarPathInfo(request)
+    context = {"pathinfo" : pathInfo, "active": "../chatbot", "profile_image": getProfileImage(request)}
+    return render(request, "fesbbook_app/chatbot.html", context)
+
 def navbarPathInfo(request):
     if request.session.get("loggedInUser") == None:
         return loggedOutNavbar

@@ -25,7 +25,7 @@ from django.urls import path
 from django.core.asgi import get_asgi_application
 from channels.security.websocket import AllowedHostsOriginValidator,OriginValidator
 
-from fesbbook_app.consumers import ChatConsumer, ConversationConsumer
+from fesbbook_app.consumers import ChatConsumer, ConversationConsumer, ChatbotConsumer
 
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "employee_project.settings")
 
@@ -38,7 +38,8 @@ application = ProtocolTypeRouter({
         AuthMiddlewareStack(
             URLRouter([
                 path("conversation", ConversationConsumer.as_asgi()),
-                path("conversation/<str:username>", ChatConsumer.as_asgi())
+                path("conversation/<str:username>", ChatConsumer.as_asgi()),
+                path("chatbot", ChatbotConsumer.as_asgi())
             ])
         ),
     )

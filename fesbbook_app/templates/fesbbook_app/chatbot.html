@@ -1,0 +1,201 @@
+{% extends "fesbbook_app/base.html"%}
+
+{% block title %}FESBbook chatbot{% endblock title %}
+
+{% block additional_styles %}
+<style>
+  .container-md {
+    min-height: 90vh;
+  }
+  footer {
+    background-color: #dfeeff;
+    padding: 10px;
+    position: fixed;
+    bottom: 0;
+    width: 100%;
+    border-top: solid grey;
+  }
+  #message_form {
+    display: flex;
+    margin-left: 10px;
+    margin-right: 10px;
+  }
+  #message_text {
+    flex: 1;
+    resize: none;
+    border: solid grey;
+  }
+  #message_button,
+  #send_button,
+  #file_button {
+    margin-top: auto;
+    margin-bottom: auto;
+    margin-left: 10px;
+    border-radius: 50%;
+    padding: 0;
+    height: 50px;
+    width: 50px;
+    padding: 10px;
+  }
+  .isActive {
+    position: absolute;
+    left: 110px;
+    top: 0;
+    height: 25px;
+    width: 25px;
+    border-radius: 50%;
+  }
+  #senderImage, #receiverImage {
+    float: left;
+    width: 100px;
+    height: 100px;
+    background-size: cover;
+    border-radius: 50%;
+    object-fit: cover;
+  }
+  #messagesList {
+    margin-bottom: 50px;
+  }
+  #senderImage {
+    border: 5px solid #6c757d;
+  }
+  #receiverImage {
+    border: 5px solid #007bff;
+  }
+</style>
+
+{% endblock additional_styles %} 
+
+{% block content %}
+<div id="messagesList">
+  <br>
+  <div class="card flex-row flex-wrap bg-secondary">
+    <div class="card-header border-0">
+      <img src="../static/images/chatbot_image.png" alt="Profile image" id="receiverImage">
+    </div>
+    <div class="card-block px-2">
+      <h4 class="card-title">FESBbot</h4>
+      <p class="card-text">Sve informacije vezano za Vaš studij i studiranje na Vašem studiju, kao i pomoć u rješavanju svih poteškoća koje mogu nastati tijekom studija, možete dobiti u kontaktu s djelatnicama studentske službe.
+
+        Djelatnice Studentske službe možete osobno kontaktirati na šalteru prostorije A127, koja se nalazi u prizemlju na desnoj strani od glavnog ulaza u zgradu Fakulteta.
+        
+        Studentska služba radi sa studentima u vremenu od 10.00 do 14.00 sati.</p>
+    </div>
+    <div class="card-footer w-100">
+      {% now "j. n. Y. G:i" %}<br/>
+    </div>
+  </div>
+</div>
+{% endblock content %}
+
+{% block footer %}
+<form
+  id="form"
+  action=""
+  method="POST"
+  enctype="multipart/form-data"
+  autocomplete="off"
+  contenteditable="true"
+  aria-multiline="true"
+  onreset="document.getElementById('send_button').disabled=true"
+>
+  {% csrf_token %}
+
+  <div id="message_form">
+    <textarea
+      class="bg-dark text-white"
+      rows="3"
+      id="message_text"
+      name="message_text"
+      placeholder="Napišite poruku..."
+      spellcheck="true"
+      onkeyup="clean()"
+      onkeydown="clean()"
+      maxlength="500"
+    ></textarea>
+    <input type="submit" class="btn btn-success btn-lg far fa-paper-plane" value="&#xf1d8" id="send_button" title="Pošalji poruku" disabled>
+    <input
+      type="reset"
+      class="btn btn-danger btn-lg fas fa-trash-alt"
+      value="&#xf2ed"
+      title="Izbriši poruku"
+      id="message_button"
+    >
+  </div>
+</form>
+{% endblock footer %}
+
+{% block script %}
+<script
+  src="https://cdnjs.cloudflare.com/ajax/libs/reconnecting-websocket/1.0.0/reconnecting-websocket.min.js"
+  integrity="sha512-B4skI5FiLurS86aioJx9VfozI1wjqrn6aTdJH+YQUmCZum/ZibPBTX55k5d9XM6EsKePDInkLVrN7vPmJxc1qA=="
+  crossorigin="anonymous"
+></script>
+<script
+  src="https://cdnjs.cloudflare.com/ajax/libs/reconnecting-websocket/1.0.0/reconnecting-websocket.min.js"
+  integrity="sha512-B4skI5FiLurS86aioJx9VfozI1wjqrn6aTdJH+YQUmCZum/ZibPBTX55k5d9XM6EsKePDInkLVrN7vPmJxc1qA=="
+  crossorigin="anonymous"
+></script>
+<script type="text/javascript">
+  clean = () => {
+    inputValue = document.getElementById("message_text").value
+    inputValue= inputValue.replace(/\s/g,"")
+    if (inputValue == "") {
+      document.getElementById("send_button").disabled = true;
+    } else {
+      document.getElementById("send_button").disabled = false;
+    }
+  }
+
+  var loc = window.location;
+
+  var wsStart = "";
+
+  loc.protocol == "https:" ? (wsStart = "wss://") : (wsStart = "ws://");
+
+  var endpoint = wsStart + loc.host + loc.pathname;
+
+  var socket = new ReconnectingWebSocket(endpoint);
+
+  socket.onmessage = function (e) {
+    console.log("message", e);
+    messageData = JSON.parse(e.data);
+    if (messageData.sender.username == "FESBbot")
+    {
+      var innerHTMLData = "<br/><div class='card flex-row flex-wrap bg-secondary'><div class='card-header border-0'> <img src='"+
+        messageData.sender.profile_image + "' alt='Profile image' id='receiverImage'></div><div class='card-block px-2'><h4 class='card-title'>" +
+        messageData.sender.username + "</h4><p class='card-text'>" +
+        messageData.message_text + "</p></div><div class='card-footer w-100'>"+
+        messageData.date_sent + "</div></div>" + document.getElementById("messagesList").innerHTML;
+      document.getElementById("messagesList").innerHTML = innerHTMLData
+    }
+    else
+    {
+      var innerHTMLData = "<br/><div class='card flex-row flex-wrap bg-primary'><div class='card-header border-0'> <img src='../"+
+        messageData.sender.profile_image + "' alt='Profile image' id='senderImage'></div><div class='card-block px-2'><h4 class='card-title'>" +
+        messageData.sender.username + "</h4><p class='card-text'>" +
+        messageData.message_text + "</p></div><div class='card-footer w-100'>"+
+        messageData.date_sent + "</div></div>" + document.getElementById("messagesList").innerHTML;
+      document.getElementById("messagesList").innerHTML = innerHTMLData
+    }
+  };
+  socket.onopen = function (e) {
+    console.log("open", e);
+    formData = document.getElementById("form");
+    formData.onsubmit = (event) => {
+      event.preventDefault();
+      var msgText = document.getElementById("message_text").value;
+
+      var finalData = {
+          messageText: msgText
+        };
+      socket.send(JSON.stringify(finalData));
+      formData.reset();
+    };
+  };
+  socket.onclose = function (e) {
+    console.log("close", e);
+  };
+    
+</script>
+{% endblock script %}

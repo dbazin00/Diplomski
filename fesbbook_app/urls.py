@@ -15,4 +15,5 @@ urlpatterns = [
     path("newPassword", views.newPassword, name="newPassword"),
     path("conversation", views.conversations, name="conversations"),
     path("conversation/<str:username>", views.messages, name="messages"),
+    path("chatbot", views.chatbot, name="chatbot"),
 ]

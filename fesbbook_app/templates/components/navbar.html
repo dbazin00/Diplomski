@@ -24,7 +24,7 @@
 </button>
 {% else %}
 <li class="nav-item dropdown">
-  {% if active == "../myProfile" %}
+  {% if active == "../myProfile" or active == "../chatbot" %}
   <a class="nav-link dropdown-toggle" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" style="color: white;">
     <img src="{{profile_image}}" id="navbarProfileImage">{{request.session.loggedInUser}}
   </a>
@@ -35,11 +35,16 @@
   {% endif %}
   <div class="dropdown-menu dropdown-menu-dark bg-dark" aria-labelledby="navbarDarkDropdownMenuLink">
     {% if active == "../myProfile" %}
-    <a class="dropdown-item" href="../myProfile" style="color: white;"><i class="fas fa-user"></i>&nbsp;Moj profil</a>
+    <a class="dropdown-item" href="../myProfile" style="color: white;"><i class="fas fa-user"></i>&nbsp;&nbsp;Moj profil</a>
     {% else %}
-    <a class="dropdown-item" href="../myProfile"><i class="fas fa-user"></i>&nbsp;Moj profil</a>
+    <a class="dropdown-item" href="../myProfile"><i class="fas fa-user"></i>&nbsp;&nbsp;Moj profil</a>
     {% endif %}
-    <a class="dropdown-item" id="login-button" data-toggle="modal" data-target="#logoutModal"><i class="fas fa-sign-out-alt"></i>&nbsp;Odjava</a>
+    {% if active == "../chatbot" %}
+    <a class="dropdown-item" href="../chatbot" style="color: white;"><i class="fas fa-robot"></i>&nbsp;FESBbook chatbot</a>
+    {% else %}
+    <a class="dropdown-item" href="../chatbot"><i class="fas fa-robot"></i>&nbsp;FESBbook chatbot</a>
+    {% endif %}
+    <a class="dropdown-item" id="login-button" data-toggle="modal" data-target="#logoutModal"><i class="fas fa-sign-out-alt"></i>&nbsp;&nbsp;Odjava</a>
   </div>
 </li>
 
