@@ -24,7 +24,7 @@
 </button>
 {% else %}
 <li class="nav-item dropdown">
-  {% if active == "../myProfile" or active == "../chatbot" %}
+  {% if active == "../myProfile" or active == "../chatbot" or active == "../myFiles" %}
   <a class="nav-link dropdown-toggle" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" style="color: white;">
     <img src="{{profile_image}}" id="navbarProfileImage">{{request.session.loggedInUser}}
   </a>
@@ -43,6 +43,11 @@
     <a class="dropdown-item" href="../chatbot" style="color: white;"><i class="fas fa-robot"></i>&nbsp;FESBbook chatbot</a>
     {% else %}
     <a class="dropdown-item" href="../chatbot"><i class="fas fa-robot"></i>&nbsp;FESBbook chatbot</a>
+    {% endif %}
+    {% if active == "../myFiles" %}
+    <a class="dropdown-item" href="../myFiles" style="color: white;"><i class="fas fa-folder-open"></i></i>&nbsp;Moje datoteke</a>
+    {% else %}
+    <a class="dropdown-item" href="../myFiles"><i class="fas fa-folder-open"></i>&nbsp;Moje datoteke</a>
     {% endif %}
     <a class="dropdown-item" id="login-button" data-toggle="modal" data-target="#logoutModal"><i class="fas fa-sign-out-alt"></i>&nbsp;&nbsp;Odjava</a>
   </div>

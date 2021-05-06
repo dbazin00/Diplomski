@@ -168,7 +168,7 @@ class ConversationConsumer(AsyncConsumer):
                                 "receiver_image": lastMessage.receiver.profile_image.url, 
                                 "sender_activity": lastMessage.sender.isActive, 
                                 "receiver_activity": lastMessage.receiver.isActive, 
-                                "date_sent": timezone.localtime(lastMessage.date_sent).strftime("%d. %#m. %Y. %#H:%M"),
+                                "date_sent": timezone.localtime(lastMessage.date_sent).strftime("%#d. %#m. %Y. %#H:%M"),
                                 "is_read": lastMessage.is_read,
                                 "unreadMessages": lastMessage.unreadMessages,
                                 "messageFile": lastMessage.message_file_name,

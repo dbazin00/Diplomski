@@ -16,4 +16,6 @@ urlpatterns = [
     path("conversation", views.conversations, name="conversations"),
     path("conversation/<str:username>", views.messages, name="messages"),
     path("chatbot", views.chatbot, name="chatbot"),
+    path("myFiles", views.myFiles, name="myFiles"),
+    path("deleteProfile", views.deleteProfile, name="deleteProfile"),
 ]

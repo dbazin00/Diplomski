@@ -1,0 +1,40 @@
+{% extends "fesbbook_app/base.html"%} 
+
+{% block title %}Moje datoteke{% endblock title %}
+
+{% block additional_styles %}
+<style>
+  #myFile {
+    font-style: italic;
+  }
+  #myFile:hover {
+    text-decoration: underline;
+    cursor: pointer;
+  }
+</style>
+{% endblock additional_styles %} 
+
+{% block content %}
+<br />
+{% if myFiles|length == 0 %}
+<div id="noFiles">Trenutno nemate svojih datoteka.</div>
+{% endif %} 
+
+{% for file in myFiles %}
+<div class="row mb-2">
+  <div class="col-6" onclick="openFile('{{file.path}}')" id="myFile">
+    <i class="{{file.file_icon}} mr-2"></i>{{file.name}}
+  </div>
+  <div class="col-6">{{file.date_sent}}</div>
+</div>
+{% endfor %} 
+
+{% endblock content %} 
+
+{% block script %}
+<script>
+  function openFile(fullFilePath) {
+    window.open(fullFilePath, "_blank");
+  }
+</script>
+{% endblock script %}

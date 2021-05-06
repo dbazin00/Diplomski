@@ -4,6 +4,8 @@ from django.db.models import Q
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.utils import timezone
 import datetime
+import os
+import shutil
 
 from .forms import StudentForm, LoginForm, PasswordForm
 from .models import Student, Study, Message, ChatRoom
@@ -258,7 +260,6 @@ def readMessages(request, loggedInUser, chatFriend):
         message.is_read = True
         message.save()
 
-
 def newPassword(request):
     if request.session.get("loggedInUser") == None:
         return redirect("/")
@@ -291,6 +292,77 @@ def chatbot(request):
     pathInfo = navbarPathInfo(request)
     context = {"pathinfo" : pathInfo, "active": "../chatbot", "profile_image": getProfileImage(request)}
     return render(request, "fesbbook_app/chatbot.html", context)
+
+def myFiles(request):
+    if request.session.get("loggedInUser") == None:
+        return redirect("/")
+
+    url = "media/files/" + request.session.get("loggedInUser")
+    myFiles = []
+    for path, directories, files in os.walk(url):
+        if files:
+            print(files[0])
+            fileInfo = {
+                "name": files[0],
+                "path": "../" + path.split("/", 1)[1].replace("\\", "/") + "/" + files[0],
+                "date_sent": datetime.datetime.fromtimestamp(os.path.getmtime(path + "/" + files[0])).strftime("%#d. %#m. %Y. %#H:%M"),
+                "file_icon": getFileIcon(files[0])
+            }
+            myFiles.append(fileInfo)
+
+    myFiles = sorted(myFiles, key=lambda k: k["date_sent"], reverse=True)
+
+    pathInfo = navbarPathInfo(request)
+    context = {"pathinfo": pathInfo, "active": "../myFiles", "profile_image": getProfileImage(request), "myFiles": myFiles}
+    return render(request, "fesbbook_app/myFiles.html", context)
+
+def deleteProfile(request):
+    loggedInUser = Student.objects.get(username=request.session.get("loggedInUser"))
+    profile_image_url = "media" + loggedInUser.profile_image.url
+    if not loggedInUser.profile_image == "profile_images/default_profile_image.png" and os.path.exists(profile_image_url):
+        os.remove(profile_image_url)
+
+    url = "media/files/" + request.session.get("loggedInUser")
+    if os.path.exists(url):
+        shutil.rmtree(url)
+
+    loggedInUser.delete()
+
+    del request.session["loggedInUser"]
+    return redirect("/")
+
+def getFileIcon(fileName):
+    fileExtension = fileName.split(".")[-1]
+    
+    if(fileExtension == "pdf"):
+        return "fas fa-file-pdf"
+        
+    elif(fileExtension == "doc" or fileExtension == "dot" or fileExtension == "wbk" or fileExtension == "docx" or fileExtension == "docm" or fileExtension == "dotx" or fileExtension == "dotm" or fileExtension == "docb"):
+        return "fas fa-file-word"
+
+    elif(fileExtension == "xls" or fileExtension == "xlt" or fileExtension == "xlm" or fileExtension == "xlsx" or fileExtension == "xlsm" or fileExtension == "xltx" or fileExtension == "xltm" or fileExtension == "xlsb" or fileExtension == "xla" or fileExtension == "xlam" or fileExtension == "xll" or fileExtension == "xlw"):
+        return "fas fa-file-excel"
+
+    elif(fileExtension == "ppt" or fileExtension == "pot" or fileExtension == "pps" or fileExtension == "pptx" or fileExtension == "pptm" or fileExtension == "potx" or fileExtension == "potm" or fileExtension == "ppam" or fileExtension == "ppsx" or fileExtension == "ppsm" or fileExtension == "sldx" or fileExtension == "sldm"):
+        return "fas fa-file-powerpoint"
+
+    elif(fileExtension == "jpg" or fileExtension == "jpeg" or fileExtension == "png" or fileExtension == "gif" or fileExtension == "tiff"):
+        return "fas fa-file-image"
+
+    elif(fileExtension == "csv"):
+        return "fas fa-file-csv"
+
+    elif(fileExtension == "zip" or fileExtension == "zipx" or fileExtension == "rar"):
+        return "fas fa-file-archive"
+    
+    elif(fileExtension == "m4a" or fileExtension == "flac" or fileExtension == "mp3" or fileExtension == "wav" or fileExtension == "wma" or fileExtension == "aac"):
+        return "fas fa-file-audio"
+    
+    elif(fileExtension == "mp4" or fileExtension == "mov" or fileExtension == "wmv" or fileExtension == "flv" or fileExtension == "avi" or fileExtension == "mkv"):
+        return "fas fa-file-video"
+
+    else:
+        return "fas fa-file"
 
 def navbarPathInfo(request):
     if request.session.get("loggedInUser") == None:

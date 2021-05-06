@@ -4,21 +4,8 @@
   <head>
     <link
       rel="icon"
-      href="{% static 'images/favicon_dark.png' %}"
+      href="{% static 'images/favicon.ico' %}"
       type="image/gif"
-      media="(prefers-color-scheme:light)"
-    />
-    <link
-      rel="icon"
-      href="{% static 'images/favicon_light.png' %}"
-      type="image/gif"
-      media="(prefers-color-scheme:dark)"
-    />
-    <link
-      rel="icon"
-      href="{% static 'images/favicon_dark.png' %}"
-      type="image/gif"
-      media="(prefers-color-scheme:no-preference)"
     />
     <meta charset="UTF-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
@@ -60,11 +47,6 @@
         height: 50px;
         filter: invert(100%);
       }
-      @media (prefers-color-scheme: dark) {
-        #faviconImage {
-          filter: invert(100%);
-        }
-      }
       #navbarProfileImage {
         height: 30px;
         width: 30px;
@@ -105,6 +87,7 @@
     </nav>
 
     {% include "components/logoutModal.html" %}
+    {% include "components/deleteProfileModal.html" %}
 
     <div class="container-md drop-shadow p-5 mt-5 bg-dark text-white">
       {% block content %} {% endblock content %}
@@ -127,24 +110,8 @@
     <script>
       document.getElementById("logoutConfirmButton").onclick = () =>
         (location.href = "../logout");
-    </script>
-    <script>
-      $(document).ready(function () {
-        if (!window.matchMedia) return;
-
-        var current = $('head > link[rel="icon"][media]');
-        $.each(current, function (i, icon) {
-          var match = window.matchMedia(icon.media);
-          function swap() {
-            if (match.matches) {
-              current.remove();
-              current = $(icon).appendTo("head");
-            }
-          }
-          match.addListener(swap);
-          swap();
-        });
-      });
+      document.getElementById("deleteProfileConfirmButton").onclick = () =>
+        (location.href = "../deleteProfile");
     </script>
     {% block script %} {% endblock script %}
   </body>

@@ -163,13 +163,6 @@ Trenutno nemate poruka s korisnikom <b>{{title}}</b>. Pošaljite poruku!
       maxlength="500"
     ></textarea>
     <input type="submit" class="btn btn-success btn-lg far fa-paper-plane" value="&#xf1d8" id="send_button" title="Pošalji poruku" disabled>
-    <!-- <input
-      type="button"
-      class="btn btn-secondary btn-lg fas fa-paperclip"
-      value="&#xf0c6"
-      title="Priloži dokument"
-      id="message_button"
-    > -->
     <div class="upload">
       <input type="file" id="fileUpload" name="fileUpload" hidden/>
       <label for="fileUpload" class="btn btn-secondary btn-lg fas fa-paperclip" title="Priloži dokument" id="file_button" style="margin-top: 15.4px; padding-top:15px;">
@@ -195,8 +188,9 @@ Trenutno nemate poruka s korisnikom <b>{{title}}</b>. Pošaljite poruku!
 <script type="text/javascript">
   clean = () => {
     inputValue = document.getElementById("message_text").value
-    inputValue= inputValue.replaceAll(/\s/g,'')
-    if (inputValue == "") {
+    inputFile = document.getElementById("fileUpload").files.length;
+    inputValue= inputValue.replace(/\s/g,'')
+    if (inputValue == "" && inputFile == 0) {
       document.getElementById("send_button").disabled = true;
     } else {
       document.getElementById("send_button").disabled = false;
@@ -328,7 +322,7 @@ Trenutno nemate poruka s korisnikom <b>{{title}}</b>. Pošaljite poruku!
   //file upload
   window.onload=()=>{
     document.getElementById("fileUpload").addEventListener("change", () => {
-
+      clean()
       if(document.getElementById("fileUpload").files[0])
       {
         inputFile = document.getElementById("fileUpload").files[0].name
@@ -338,6 +332,7 @@ Trenutno nemate poruka s korisnikom <b>{{title}}</b>. Pošaljite poruku!
         document.getElementById("removeFileButton").addEventListener("click", () => {
           document.getElementById("fileList").innerHTML = ""
           document.getElementById("fileUpload").value = ""
+          clean()
         })
       }
       else

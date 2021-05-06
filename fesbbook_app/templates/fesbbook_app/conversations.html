@@ -254,11 +254,11 @@ Trenutno nemate razgovora u kojim sudjelujete. Povratak na
 
         if(message.is_read)
         {
-          cardFooter.innerHTML = "<div class='text-muted'>Pročitano</div>"
+          cardFooter.innerHTML += "<div class='text-muted'>Pročitano</div>"
         }
         else
         {
-          cardFooter.innerHTML = "<div class='text-primary'>Nepročitano</div>"
+          cardFooter.innerHTML += "<div class='text-primary'>Nepročitano</div>"
         }
         cardElement.innerHTML = cardHeader.outerHTML + cardBlock.outerHTML + cardFooter.outerHTML
         document.getElementById("conversationList").innerHTML += cardElement.outerHTML + "<br/>"
