@@ -138,7 +138,7 @@ def studentList(request):
     start_index = index - 2 if index >= 2 else 0
     end_index = index + 3 if index < max_index - 3 else max_index
 
-    if end_index - start_index < 5 and not max_index == end_index:
+    if end_index - start_index < 5 and max_index > 5:
         if index == 0:
             end_index += 2
         if index == 1:
@@ -150,8 +150,6 @@ def studentList(request):
 
 
     page_range = paginator.page_range[start_index:end_index]
-
-    print(start_index, end_index,max_index,index, page_range)
     
     baseURL = request.get_full_path()
 
