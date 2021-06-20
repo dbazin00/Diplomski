@@ -70,6 +70,8 @@ def logout(request):
 def registration(request):
     if request.session.get("loggedInUser") != None:
         return redirect("/")
+
+    studyTableEmpty()
     
     if request.method == "POST":
         newStudent = StudentForm(request.POST, request.FILES)
@@ -121,7 +123,7 @@ def studentList(request):
             
     studentList = Student.objects.filter(fullQuerry).exclude(username = loggedInUser.username)
 
-    paginator = Paginator(studentList, 10)
+    paginator = Paginator(studentList, 5)
     page = request.GET.get("page")
 
     try:
@@ -129,13 +131,27 @@ def studentList(request):
     except PageNotAnInteger:
         items = paginator.page(1)
     except EmptyPage:
-        items.paginator.page(paginator.num_pages)
+        items = paginator.page(paginator.num_pages)
 
     index = items.number - 1
     max_index = len(paginator.page_range)
-    start_index = index - 5 if index >= 5 else 0
-    end_index = index + 5 if index <= max_index - 5 else max_index
+    start_index = index - 2 if index >= 2 else 0
+    end_index = index + 3 if index < max_index - 3 else max_index
+
+    if end_index - start_index < 5 and not max_index == end_index:
+        if index == 0:
+            end_index += 2
+        if index == 1:
+            end_index += 1
+        if index == max_index - 2:
+            start_index -= 1
+        if index == max_index - 1:
+            start_index -= 2
+
+
     page_range = paginator.page_range[start_index:end_index]
+
+    print(start_index, end_index,max_index,index, page_range)
     
     baseURL = request.get_full_path()
 
@@ -372,6 +388,50 @@ def navbarPathInfo(request):
 
 def getProfileImage(request):
     return Student.objects.get(username = request.session.get("loggedInUser")).profile_image.url
+
+def studyTableEmpty():
+    if not Study.objects.count():
+        Study.objects.create(study_code=110, study_name="Elektrotehnika i informacijska tehnologija - preddiplomski")
+        Study.objects.create(study_code=111, study_name="Automtika i sustavi - preddiplomski")
+        Study.objects.create(study_code=112, study_name="Elektrotehnika i računalno inženjerstvo - preddiplomski")
+        Study.objects.create(study_code=113, study_name="Elektrotehnika - preddiplomski")
+        Study.objects.create(study_code=114, study_name="Komunikacijska i informacijska tehnologija - preddiplomski")
+        Study.objects.create(study_code=120, study_name="Računarstvo - preddiplomski")
+        Study.objects.create(study_code=130, study_name="Strojarstvo - preddiplomski")
+        Study.objects.create(study_code=140, study_name="Brodogradnja - preddiplomski")
+        Study.objects.create(study_code=150, study_name="Industrijsko inženjerstvo - preddiplomski")
+        Study.objects.create(study_code=210, study_name="Automatika i sustavi - diplomski")
+        Study.objects.create(study_code=220, study_name="Elektrotehnika i računalno inženjerstvo - diplomski")
+        Study.objects.create(study_code=221, study_name="Elektronika - diplomski")
+        Study.objects.create(study_code=222, study_name="Računalno inženjerstvo - diplomski")
+        Study.objects.create(study_code=230, study_name="Elektrotehnika - diplomski")
+        Study.objects.create(study_code=231, study_name="Automatizacija i pogoni - diplomski")
+        Study.objects.create(study_code=232, study_name="Elektroenergetski sustavi - diplomski")
+        Study.objects.create(study_code=241, study_name="Bežične komunikacije - diplomski")
+        Study.objects.create(study_code=242, study_name="Telekomunikacije i informatika - diplomski")
+        Study.objects.create(study_code=250, study_name="Računarstvo - diplomski")
+        Study.objects.create(study_code=261, study_name="Konstrukcijsko-energetsko strojarstvo - diplomski")
+        Study.objects.create(study_code=262, study_name="Računalno projektiranje i inženjerstvo - diplomski")
+        Study.objects.create(study_code=263, study_name="Proizvodno strojarstvo - diplomski")
+        Study.objects.create(study_code=270, study_name="Industrijsko inženjerstvo - diplomski")
+        Study.objects.create(study_code=271, study_name="Proizvodni managment - diplomski")
+        Study.objects.create(study_code=272, study_name="Upravljanje životnim ciklusom proizvoda - diplomski")
+        Study.objects.create(study_code=280, study_name="Brodogradnja - diplomski")
+        Study.objects.create(study_code=310, study_name="Elektrotehnika i informacijska tehnologija - poslijediplomski")
+        Study.objects.create(study_code=330, study_name="Strojarstvo - poslijediplomski")
+        Study.objects.create(study_code=510, study_name="Elektrotehnika - stručni")
+        Study.objects.create(study_code=511, study_name="Elektroenergetika - stručni")
+        Study.objects.create(study_code=512, study_name="Elektronika - stručni")
+        Study.objects.create(study_code=530, study_name="Strojarstvo - stručni")
+        Study.objects.create(study_code=540, study_name="Brodogradnja - stručni")
+        Study.objects.create(study_code=550, study_name="Računarstvo - stručni")
+        Study.objects.create(study_code=910, study_name="Automatika i sustavi - razlikovni")
+        Study.objects.create(study_code=920, study_name="Elektronika i računalno inženjerstvo - razlikovni")
+        Study.objects.create(study_code=930, study_name="Elektrotehnika - razlikovni")
+        Study.objects.create(study_code=940, study_name="Komunikacijska i informacijska tehnologija - razlikovni")
+        Study.objects.create(study_code=950, study_name="Računarstvo - razlikovni")
+        Study.objects.create(study_code=960, study_name="Strojarstvo - razlikovni")
+        Study.objects.create(study_code=970, study_name="Brodogradnja - razlikovni")
 
 def error_400_view(request, exception):
     pathInfo = navbarPathInfo(request)

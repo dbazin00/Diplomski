@@ -6,13 +6,23 @@
       <li class="page-item">
         <a
           class="page-link"
+          href="{{baseURL}}page={{items.first}}"
+          ><i class="fas fa-angle-double-left"></i></i></a
+        >
+      </li>
+      <li class="page-item">
+        <a
+          class="page-link"
           href="{{baseURL}}page={{items.previous_page_number}}"
-          ><<</a
+          ><i class="fas fa-angle-left"></i></i></a
         >
       </li>
       {% else %}
       <li class="page-item disabled">
-        <a class="page-link"><span><<</span></a>
+        <a class="page-link"><span><i class="fas fa-angle-double-left"></i></i></span></a>
+      </li>
+      <li class="page-item disabled">
+        <a class="page-link"><span><i class="fas fa-angle-left"></i></i></span></a>
       </li>
       {% endif %} 
       {% for i in page_range %} 
@@ -32,12 +42,23 @@
           class="page-link"
           aria-label="Next"
           href="{{baseURL}}page={{items.next_page_number}}"
-          >>></a
+          ><i class="fas fa-angle-right"></i></a
+        >
+      </li>
+      <li class="page-item">
+        <a
+          class="page-link"
+          aria-label="Next"
+          href="{{baseURL}}page={{items.paginator.num_pages}}"
+          ><i class="fas fa-angle-double-right"></i></a
         >
       </li>
       {% else %}
       <li class="page-item disabled">
-        <a class="page-link"><span>>></span></a>
+        <a class="page-link"><span><i class="fas fa-angle-right"></i></span></a>
+      </li>
+      <li class="page-item disabled">
+        <a class="page-link"><span><i class="fas fa-angle-double-right"></i></span></a>
       </li>
       {% endif %}
     </ul>

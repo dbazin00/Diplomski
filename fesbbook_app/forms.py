@@ -5,7 +5,7 @@ import re
 
 INVALID_USERNAMES = ["None", "default"]
 USERNAME_REGEX = r"^[a-zA-Z0-9_.]+$"
-EMAIL_REGEX = r"^[a-zA-Z0-9]+@fesb.hr$"
+EMAIL_REGEX = r"^[a-zA-Z0-9_.]+@fesb.hr$"
 
 class StudentForm(forms.ModelForm):
     password_confirm = forms.CharField(max_length=50, label="Potvrda lozinke", widget=forms.PasswordInput())

@@ -1,6 +1,5 @@
 from django.db import models
 from django.core.validators import RegexValidator
-from django import forms
 from django.db.models import Q
 import datetime
 from django.utils import timezone
@@ -15,7 +14,7 @@ def current_year():
 
 class Study(models.Model):
     study_code = models.PositiveIntegerField(validators=[RegexValidator(r'^\d{100,999}$')], primary_key=True)
-    study_name = models.CharField(max_length=50)
+    study_name = models.CharField(max_length=100)
     def __str__(self):
         return (str(self.study_code) + " " + self.study_name)
 
@@ -79,6 +78,3 @@ class Message(models.Model):
     message_file = models.FileField(blank=True, null=True, max_length=500)
     message_file_name = models.CharField(max_length=500, blank=True, null=True)
     message_file_icon = models.CharField(max_length=22, blank=True, null=True)
-
-
-        

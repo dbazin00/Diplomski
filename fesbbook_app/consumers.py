@@ -2,13 +2,11 @@ import asyncio
 import json
 from channels.consumer import AsyncConsumer
 from channels.db import database_sync_to_async
-from asgiref.sync import sync_to_async
 from django.utils import timezone
 from datetime import datetime
 from django.core.files.base import ContentFile
 from django.core.files.storage import FileSystemStorage
 from django.db.models import Q
-from django.core import serializers
 
 from .models import Message, ChatRoom, Student
 from fesbbook_app.chatbot import chatbot as chatbot
