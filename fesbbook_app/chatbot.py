@@ -46,11 +46,6 @@ class NeuralNet(nn.Module):
         return out
 
 def train():
-    myString = "Rasturite me pitanjima"
-    myString = tokenize(myString)
-    stemmed_words = [stem(w) for w in myString]
-    # print(stemmed_words)
-
     with open("fesbbook_app/chatbot_data.json", "r", encoding="utf8") as chatbot_data:
         chatbot_data = json.load(chatbot_data)
 
