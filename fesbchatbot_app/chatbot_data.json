@@ -1,0 +1,234 @@
+{
+    "chatbot": [
+        {
+            "category": "greeting",
+            "questions" : [
+                "Pozdrav",
+                "Dobar dan",
+                "Dobra večer",
+                "Dobro jutro"
+            ],
+            "responses": [
+                "Pozdrav i tebi :)"
+            ]
+        },
+        {
+            "category": "goodbye",
+            "questions" : [
+                "Doviđenja",
+                "Do viđenja",
+                "Moram ići",
+                "Vidimo se",
+                "Bog",
+                "Laku noć"
+            ],
+            "responses": [
+                "Ugodan nastavak dana!",
+                "Sretno u nastavku dana!"
+            ]
+        },
+        {
+            "category": "thanks",
+            "questions" : [
+                "Hvala",
+                "Hvala ti puno",
+                "Hvala na pomoći",
+                "Zahvaljujem",
+                "Fala"
+            ],
+            "responses": [
+                "I drugi put :)",
+                "Drago mi je da mogu pomoći :)",
+                "Nema problema :)"
+            ]
+        },
+        {
+            "category": "about",
+            "questions" : [
+                "Što je ovo?",
+                "Tko si ti",
+                "Koja ti je funkcija?",
+                "Čemu služiš?",
+                "Što radiš?"
+            ],
+            "responses": [
+                "Ja sam FESB chatbot. Moja uloga je da pokušam odogovoriti na najčešća pitanja studenata FESB-a.<br>Znam odgovore o svim studijima, pravima studenata, studentskoj službi, vodstvu fakulteta, ali i o rasporedu kolokvija."
+            ]
+        },
+        {
+            "category": "office",
+            "questions" : [
+                "Referada",
+                "Studentska služba"
+            ],
+            "responses": [
+                "Sve informacije vezano za Vaš studij i studiranje na Vašem studiju, kao i pomoć u rješavanju svih poteškoća koje mogu nastati tijekom studija, možete dobiti u kontaktu s djelatnicama studentske službe.<br>Djelatnice Studentske službe možete osobno kontaktirati na šalteru prostorije A127, koja se nalazi u prizemlju na desnoj strani od glavnog ulaza u zgradu Fakulteta.<br>Studentska služba radi sa studentima u vremenu <b>od 10.00 do 14.00 sati</b>."
+            ]
+        },
+        {
+            "category": "classes",
+            "questions" : [
+                "Raspored predavanja",
+                "Raspored sati"
+            ],
+            "responses": [
+                "Raspored predavanja možeš pronaći na <a href='https://raspored.fesb.unist.hr/raspored/studiji' target='_blank'>poveznici</a>."
+            ]
+        },
+        {
+            "category": "teachers",
+            "questions" : [
+                "Profesor",
+                "Ured profesora",
+                "Profesorica",
+                "Ured profesorice",
+                "Nastavnik",
+                "Ured nastavnika",
+                "Nastavnica",
+                "Ured nastavnice",
+                "Asistent",
+                "Asistentica",
+                "Ured asistenta",
+                "Ured asistentice"
+            ],
+            "responses": [
+                "Raspored predavanja traženog profesora možeš pronaći na <a href='https://raspored.fesb.unist.hr/raspored/nastavnici' target='_blank'>poveznici</a>.",
+                "informacije o traženom profesoru možeš pronaći na <a href='https://nastava.fesb.unist.hr/nastava/nastavnici/detalji' target='_blank'>poveznici</a>."
+            ]
+        },
+        {
+            "category": "study_information",
+            "questions" : [
+                "Informacije o studiju",
+                "Reci mi nešto o studiju",
+                "Gdje mogu vidjeti nešto o studijima"
+            ],
+            "responses": [
+                "Informacije o studiju možeš pronaći na <a href='https://nastava.fesb.unist.hr/nastava/studiji/354/god/1' target='_blank'>poveznici</a>."
+            ]
+        },
+        {
+            "category": "prvi_kolokviji_zimski_semestar",
+            "questions" : [
+                "Prvi kolokviji u zimskom semestru",
+                "Kada su prvi kolokviji u zimskom semestru",
+                "Raspored prvih kolokvija u prvom semestru",
+                "Raspored prvih kolokvija u zimskom semestru"
+            ],
+            "responses": [
+                "Raspored kolokvija i ispita možeš pronaći na <a href='https://raspored.fesb.unist.hr/raspored/studiji' target='_blank'>poveznici</a>.",
+                "Prvi kolokviji u zimskom semestru održavaju se <b>od  16. studenog do 29. studenog 2020.</b>"
+            ]
+        },
+        {
+            "category": "drugi_kolokviji_zimski_semestar",
+            "questions" : [
+                "Drugi  kolokviji u zimskom semestru",
+                "Kada su drugi kolokviji u zimskom semestru",
+                "Raspored drugih kolokvija u prvom semestru",
+                "Raspored drugih kolokvija u zimskom semestru"
+            ],
+            "responses": [
+                "Raspored kolokvija i ispita možeš pronaći na <a href='https://raspored.fesb.unist.hr/raspored/studiji' target='_blank'>poveznici</a>.",
+                "Drugi kolokviji u zimskom semestru održavaju se <b>od  25. siječnja do 7. veljače 2021.</b>"
+            ]
+        },
+        {
+            "category": "prvi_kolokviji_ljetni_zimski_semestar",
+            "questions" : [
+                "Prvi kolokviji u ljetnom semestru",
+                "Kada su prvi kolokviji u ljetnom semestru",
+                "Raspored prvih kolokvija u drugom semestru",
+                "Raspored prvih kolokvija u zimsljetnomkom semestru"
+            ],
+            "responses": [
+                "Raspored kolokvija i ispita možeš pronaći na <a href='https://raspored.fesb.unist.hr/raspored/studiji' target='_blank'>poveznici</a>.",
+                "Prvi kolokviji u zimskom semestru održavaju se <b>od  26. travnja do 9. svibnja 2020.</b>"
+            ]
+        },
+        {
+            "category": "drugi_kolokviji_ljetni_semestar",
+            "questions" : [
+                "Drugi  kolokviji u ljetnom semestru",
+                "Kada su drugi kolokviji u ljetnom semestru",
+                "Raspored drugih kolokvija u drugom semestru",
+                "Raspored drugih kolokvija u ljetnom semestru"
+            ],
+            "responses": [
+                "Raspored kolokvija i ispita možeš pronaći na <a href='https://raspored.fesb.unist.hr/raspored/studiji' target='_blank'>poveznici</a>.",
+                "Drugi kolokviji u zimskom semestru održavaju se <b>od  21. lipnja do 4. srpnja 2021.</b>"
+            ]
+        },
+        {
+            "category": "prvi_ispitni_rok_zimski_semestar",
+            "questions" : [
+                "Prvi ispitni rok u zimskom semestru",
+                "Kada je prvi ispitni rok u prvom semestru",
+                "Raspored prvi ispitni rok u zimskom semestru"
+            ],
+            "responses": [
+                "Raspored kolokvija i ispita možeš pronaći na <a href='https://raspored.fesb.unist.hr/raspored/studiji' target='_blank'>poveznici</a>.",
+                "Prvi ispitni rok u zimskom semestru održava se <b>od  8. veljače do 21. veljače 2021.</b>"
+            ]
+        },
+        {
+            "category": "drugi_ispitni_rok_zimski_semestar",
+            "questions" : [
+                "Drugi ispitni rok u zimskom semestru",
+                "Kada je drugi ispitni rok u prvom semestru",
+                "Raspored drugi ispitni rok u zimskom semestru"
+            ],
+            "responses": [
+                "Raspored kolokvija i ispita možeš pronaći na <a href='https://raspored.fesb.unist.hr/raspored/studiji' target='_blank'>poveznici</a>.",
+                "Drugi ispitni rok u zimskom semestru održava se <b>od  21. veljače do 7. ožujka 2021.</b>"
+            ]
+        },
+        {
+            "category": "prvi_ispitni_rok_ljetni_semestar",
+            "questions" : [
+                "Prvi ispitni rok u ljetnom semestru",
+                "Kada je prvi ispitni rok u drugom semestru",
+                "Raspored prvi ispitni rok u ljetnom semestru"
+            ],
+            "responses": [
+                "Raspored kolokvija i ispita možeš pronaći na <a href='https://raspored.fesb.unist.hr/raspored/studiji' target='_blank'>poveznici</a>.",
+                "Prvi ispitni rok u ljetnom semestru održava se <b>od  5. srpnja do 11. srpnja 2021.</b>"
+            ]
+        },
+        {
+            "category": "drugi_ispitni_rok_ljetni_semestar",
+            "questions" : [
+                "Drugi ispitni rok u ljetnom semestru",
+                "Kada je drugi ispitni rok u drugom semestru",
+                "Raspored drugi ispitni rok u ljetnom semestru"
+            ],
+            "responses": [
+                "Raspored kolokvija i ispita možeš pronaći na <a href='https://raspored.fesb.unist.hr/raspored/studiji' target='_blank'>poveznici</a>.",
+                "Drugi ispitni rok u ljetnom semestru održava se <b>od  19. srpnja do 25. srpnja 2021.</b>"
+            ]
+        },
+        {
+            "category": "popravni_rok",
+            "questions" : [
+                "Popravni rok",
+                "Jesenski rok"
+            ],
+            "responses": [
+                "Raspored kolokvija i ispita možeš pronaći na <a href='https://raspored.fesb.unist.hr/raspored/studiji' target='_blank'>poveznici</a>.",
+                "Popravni ispitni rokovi u održavaju se <b>od  23. kolovoza do 19. rujna 2021.</b>"
+            ]
+        },
+        {
+            "category": "upisi",
+            "questions" : [
+                "Upisi u više godine",
+                "Upisi"
+            ],
+            "responses": [
+                "Upute za upis na više godine možeš pronaći na <a href='https://upisi.fesb.unist.hr/' target='_blank'>poveznici</a>.",
+                "Upisi u više godine održavaju se od <b>od  26. rujna do 1. listopada 2021.</b>",
+                "Za besplatan upis (bez plaćanja 133 kn po ECTS bodu) potrebno je skupiti minimalno 53 ECTS boda, odnosno dozvoljeno je prenijeti jedan predmet od 7 ECTS bodova u slijedeću godinu."
+            ]
+        }
+    ]
+}

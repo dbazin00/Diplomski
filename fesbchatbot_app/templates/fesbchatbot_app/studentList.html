@@ -1,0 +1,170 @@
+{% extends "fesbchatbot_app/base.html" %} 
+
+{% block additional_styles %}
+<style>
+  #profile_image_display {
+    float: left;
+    width: 100px;
+    height: 100px;
+    background-size: cover;
+    border-radius: 50%;
+    border: 5px solid #007bff;
+  }
+  .row:hover {
+    transition: 0.5s ease;
+    background-color: grey;
+  }
+  .vcenter {
+    display: flex;
+    align-items: center;
+  }
+  .isActive {
+    position: absolute;
+    left: 110px;
+    top: 0;
+    height: 25px;
+    width: 25px;
+    background-color: green;
+    color: green;
+    border-radius: 50%;
+  }
+  .pagination > li > a {
+    background-color: #6c757d;
+    color: white;
+  }
+  .pagination > .disabled > a {
+    background-color: #6c757d !important;
+  }
+  .disabled > a > span {
+    color: white !important;
+    opacity: 0.5 !important;
+  }
+  .card:hover {
+    transition: 0.5s ease;
+    background-color: #6c757d !important;
+    cursor: pointer;
+  }
+  .card {
+    transition: 0.5s ease;
+  }
+  .isActive {
+    position: absolute;
+    left: 110px;
+    top: 0;
+    height: 25px;
+    width: 25px;
+    border-radius: 50%;
+  }
+</style>
+{% endblock additional_styles %}
+
+{% block title %}Kolege{% endblock title %}
+
+{% block content %}
+<br />
+<form class="form my-2 my-lg-0" id="searchForm" method="GET" onkeydown="return event.key != 'Enter';">
+  <div class="input-group">
+    <div class="form-outline">
+      <input
+        type="search"
+        id="username"
+        class="form-control"
+        placeholder="Korisničko ime..."
+        name="username"
+        autocomplete="off"
+      />
+    </div>
+  </div>
+  <div class="form-check mt-4 mb-4">
+    <input
+      class="form-check-input"
+      type="checkbox"
+      id="myStudy"
+      name="study"
+    />
+  </div>
+  <div class="form-check mt-4 mb-4">
+    <label class="form-check-label" for="myStudy">
+      Prikaži samo moj smjer
+    </label>
+  </div>{{reuest.GET.get.year}}
+  <select class="form-select mt-2 mb-4" id="year" name="year">
+    <option value="">Odaberite godinu upisa</option>
+    {% for y in range %}
+        <option value="{{ y }}">{{ y }}</option>
+    {% endfor %}
+  </select>
+  <br>
+  <button type="submit" class="btn btn-primary mt-2 mb-2">
+    <i class="fas fa-search"></i> Primijeni filtere
+  </button>
+  <br>
+  <button type="button" class="btn btn-danger mt-2 mb-4" onclick="location.href='../studentList'">
+    <i class="fas fa-times"></i> Poništi filtere
+  </button>
+</form>
+{% if items|length == 0 %}
+Ne postoji korisnik s traženim podacima. Povratak na
+<a href="studentList">listu svih studenata</a>. 
+{% endif %} 
+{% include "components/pagination.html" %}
+{% for student in items %}
+<div
+  class="card flex-row flex-wrap bg-dark"
+  onclick="window.location='studentList/{{student.username}}';"
+>
+  <div class="card-header border-0">
+    <img
+      src="{{student.profile_image}}"
+      alt="Profile image"
+      id="profile_image_display"
+    />
+    {% if student.isActive %}
+    <div class="isActive bg-success"></div>
+    {% endif %}
+  </div>
+  <div class="card-block px-2">
+    <h4 class="card-title">{{student.username}}</h4>
+    <p class="card-text">{{student.study}}</p>
+  </div>
+  <div class="card-footer w-100">
+    {% if student.isActive %} Aktivan {% else %} Zadnja aktivnost:
+    {{student.lastActivity|date:"j. n. Y. G:i"}} {% endif %}
+  </div>
+</div>
+<br />
+{% endfor %} 
+{% include "components/pagination.html" %} 
+{% endblock content %}
+
+{% block script %}
+<script>
+  window.onload = () => {
+    function getUrlVars() {
+      var vars = [],
+        hash;
+      var hashes = window.location.href
+        .slice(window.location.href.indexOf("?") + 1)
+        .split("&");
+
+      for (var i = 0; i < hashes.length; i++) {
+        hash = hashes[i].split("=");
+        hash[1] = unescape(hash[1]);
+        vars.push(hash[0]);
+        vars[hash[0]] = hash[1];
+      }
+
+      return vars;
+    }
+    document.getElementById("myStudy").checked = getUrlVars()["study"];
+    if (getUrlVars()["username"])
+    {
+      document.getElementById("username").value = getUrlVars()["username"];
+    }
+    if (getUrlVars()["year"])
+    {
+      document.getElementById("year").value = getUrlVars()["year"];
+    }
+  };
+</script>
+{% endblock script %}

@@ -1,0 +1,56 @@
+{% for pathItem in pathinfo %} 
+{% if pathItem.path == active %}
+<a
+  class="nav-item d-lg-flex align-items-center nav-link active"
+  href="{{pathItem.path}}"
+  ><i class="{{pathItem.icon}}"></i>&nbsp;{{pathItem.text}}
+</a>
+{% else %}
+<a
+  class="nav-item d-lg-flex align-items-center nav-link"
+  href="{{pathItem.path}}"
+  ><i class="{{pathItem.icon}}"></i>&nbsp;{{pathItem.text}}
+</a>
+{% endif %} 
+{% endfor %}
+{% if request.session.loggedInUser == None %}
+<button
+  type="button"
+  class="nav-link btn btn-danger btn-md nav-item d-lg-flex align-items-center"
+  onclick="location.href='login'"
+>
+  <i class="fas fa-sign-in-alt"></i>&nbsp;
+  Prijava
+</button>
+{% else %}
+<li class="nav-item dropdown">
+  {% if active == "../myProfile" or active == "../chatbot" or active == "../myFiles" %}
+  <a class="nav-link dropdown-toggle" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" style="color: white;">
+    <img src="{{profile_image}}" id="navbarProfileImage">{{request.session.loggedInUser}}
+  </a>
+  {% else %}
+  <a class="nav-link dropdown-toggle" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+    <img src="{{profile_image}}" id="navbarProfileImage">{{request.session.loggedInUser}}
+  </a>
+  {% endif %}
+  <div class="dropdown-menu dropdown-menu-dark bg-dark" aria-labelledby="navbarDarkDropdownMenuLink">
+    {% if active == "../myProfile" %}
+    <a class="dropdown-item" href="../myProfile" style="color: white;"><i class="fas fa-user"></i>&nbsp;&nbsp;Moj profil</a>
+    {% else %}
+    <a class="dropdown-item" href="../myProfile"><i class="fas fa-user"></i>&nbsp;&nbsp;Moj profil</a>
+    {% endif %}
+    {% if active == "../chatbot" %}
+    <a class="dropdown-item" href="../chatbot" style="color: white;"><i class="fas fa-robot"></i>&nbsp;FESB chatbot</a>
+    {% else %}
+    <a class="dropdown-item" href="../chatbot"><i class="fas fa-robot"></i>&nbsp;FESB chatbot</a>
+    {% endif %}
+    {% if active == "../myFiles" %}
+    <a class="dropdown-item" href="../myFiles" style="color: white;"><i class="fas fa-folder-open"></i></i>&nbsp;Moje datoteke</a>
+    {% else %}
+    <a class="dropdown-item" href="../myFiles"><i class="fas fa-folder-open"></i>&nbsp;Moje datoteke</a>
+    {% endif %}
+    <a class="dropdown-item" id="login-button" data-toggle="modal" data-target="#logoutModal"><i class="fas fa-sign-out-alt"></i>&nbsp;&nbsp;Odjava</a>
+  </div>
+</li>
+
+{% endif %}
